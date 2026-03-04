@@ -1,1 +1,40 @@
-<p>login works!</p>
+<section class="login-wrapper">
+  
+  <main class="glass-card">
+    
+    <header class="card-header">
+      <h1>Centel</h1>
+      <p>Áudio & Vídeo</p>
+    </header>
+
+    <form class="login-form" (ngSubmit)="fazerLogin()">
+      
+      <div class="input-group">
+        <label for="email">Usuário (E-mail)</label>
+        <input type="email" id="email" name="email" [(ngModel)]="email" placeholder="exemplo@email.com" required>
+      </div>
+
+      <div class="input-group">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" [(ngModel)]="senha" placeholder="••••••••" required>
+      </div>
+
+      <div class="input-group">
+        <label for="tipoUsuario">Tipo de Usuário</label>
+        <select id="tipoUsuario" name="tipoUsuario" [(ngModel)]="tipoUsuario" required>
+          <option value="" disabled selected>Selecione seu cargo</option>
+          <option value="admin">Administrador</option>
+          <option value="atendente">Atendente</option>
+          <option value="tecnico">Técnico</option>
+        </select>
+      </div>
+
+      <p class="error-msg" *ngIf="mensagemErro">{{ mensagemErro }}</p>
+
+      <button type="submit" class="btn-login" [disabled]="carregando">
+        {{ carregando ? 'Validando...' : 'Entrar no Sistema' }}
+      </button>
+
+    </form>
+  </main>
+</section>
