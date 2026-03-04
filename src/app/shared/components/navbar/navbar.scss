@@ -1,0 +1,113 @@
+/* O :host aplica estilos diretamente na raiz deste componente Angular */
+:host {
+  /* Define a família da fonte para todos os elementos filhos */
+  font-family: 'Inter', sans-serif;
+  /* Garante que o componente se comporte como um bloco que ocupa espaço na tela */
+  display: block;
+  /* Garante que ocupe no mínimo 100% da altura da janela do navegador */
+  min-height: 100vh;
+  /* Resgata os tons de verde da identidade da Centel usados na tela de login */
+  background: linear-gradient(135deg, #0b3d2e 0%, #1e7d62 100%);
+  /* Define a cor padrão do texto como branco para dar contraste com o fundo escuro */
+  color: #ffffff;
+}
+
+.glass-nav {
+  /* Coloca o logo na esquerda, menu no centro e avatar na direita */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* Espaçamento interno lateral */
+  padding: 0 40px;
+  /* Altura fixa para a barra do topo */
+  height: 80px;
+  
+  /* Efeito Glassmorphism sutil para a barra superior */
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  /* Linha separadora bem fina na parte de baixo da barra */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* --- ESTILOS DO CABEÇALHO (NAVBAR) --- */
+.glass-nav {
+  /* Coloca o logo na esquerda, menu no centro e avatar na direita */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* Espaçamento interno lateral */
+  padding: 0 40px;
+  /* Altura fixa para a barra do topo */
+  height: 80px;
+  
+  /* Efeito Glassmorphism sutil para a barra superior */
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  /* Linha separadora bem fina na parte de baixo da barra */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  
+  /* A sílaba 'CEN' fica com o verde de destaque do sistema */
+  .logo-highlight {
+    color: #20c997; 
+  }
+}
+
+.nav-links {
+  /* Organiza os itens de menu lado a lado */
+  display: flex;
+  /* Tira as bolinhas da lista HTML */
+  list-style: none;
+  /* Espaço uniforme entre os botões */
+  gap: 32px;
+  margin: 0;
+  padding: 0;
+
+  a {
+    /* Tira o sublinhado feio padrão dos links */
+    text-decoration: none;
+    /* Branco levemente transparente para os links inativos */
+    color: rgba(255, 255, 255, 0.6); 
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 8px 0;
+    /* Prepara o link para receber o traço animado embaixo dele */
+    position: relative;
+    transition: all 0.3s ease;
+
+    /* Ao passar o mouse (hover) ou se for a página ativa, a cor fica branca forte */
+    &:hover, &.active {
+      color: #ffffff;
+    }
+
+    /* Cria um pequeno traço verde abaixo do item que representa a tela atual */
+    &.active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: #20c997;
+      border-radius: 2px;
+    }
+  }
+}
+
+/* Bolinha provisória que simula a foto do usuário */
+.user-profile .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #20c997, #128c7e);
+  cursor: pointer;
+}

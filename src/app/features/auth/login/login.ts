@@ -8,10 +8,10 @@ import { SupabaseService } from '../../../core/services/supabase.service'; // No
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './login.html', // Nome conforme seu arquivo
-  styleUrl: './login.scss'     // Nome conforme seu arquivo
+  templateUrl: './login.html', 
+  styleUrl: './login.scss'     
 })
-export class Login { // Conforme sua regra: Classe em MAIÚSCULO
+export class Login { 
   
   // Variáveis que guardam o que o usuário digita
   email = '';
@@ -53,10 +53,10 @@ export class Login { // Conforme sua regra: Classe em MAIÚSCULO
       } 
       // Se der sucesso e o usuário existir
       else if (data.user) {
-        // Por enquanto apenas um alerta didático
-        alert('Login realizado! Bem-vindo ao sistema Centel.');
+        console.log('Login realizado! Bem-vindo ao sistema Centel.');
         
-        // No futuro, aqui faremos: this.router.navigate(['/home']);
+        // Esta linha faz o redirecionamento imediato para a tela inicial!
+        this.router.navigate(['/dashboard']);
       }
 
     } catch (err) {
