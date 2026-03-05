@@ -4,6 +4,8 @@ import { Routes } from '@angular/router';
 // ATENÇÃO: Verifique se o caminho './features/...' bate certinho com os nomes dos seus arquivos!
 import { Login } from './features/auth/login/login'; 
 import { Dashboard } from './features/home/dashboard/dashboard';
+import { ClienteCadastro } from './features/clientes/cliente-cadastro/cliente-cadastro';
+
 
 export const routes: Routes = [
   // 1. ROTA PADRÃO: Se o usuário acessar o site sem digitar nada na URL, mandamos ele para o login.
@@ -15,7 +17,7 @@ export const routes: Routes = [
   // 3. ROTA DO DASHBOARD: Quando a URL for '/dashboard', mostra a tela DASHBOARD.
   { path: 'dashboard', component: Dashboard },
 
-  // 4. ROTA CURINGA (**): Se o usuário tentar acessar uma URL que não existe
-  // o sistema intercepta e joga ele de volta para o login.
-  { path: '**', redirectTo: 'login' }
+  // 4. ROTA DO CADASTRO CLIENTE: Quando a URL for '/cliente mostra a tela CLIENTE
+  { path: 'cadastro', component: ClienteCadastro},
+
 ];

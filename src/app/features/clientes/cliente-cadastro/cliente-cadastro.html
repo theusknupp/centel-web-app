@@ -1,1 +1,77 @@
-<p>cliente-cadastro works!</p>
+<app-navbar></app-navbar>
+
+<main class="container-cadastro" id="cadastro">
+
+    <section class="glass-card-grande">
+        <header>
+            <h1>Cadastro de Cliente</h1>
+            <p>Preencha os dados para registrar um Cliente.</p>
+        </header>
+
+        <form (ngSubmit)="salvarCliente()" class="form-grid">
+
+            <div class="form-section">
+                <div class="input-full">
+                    <label for="">Nome Completo / Razão Social</label>
+                    <input type="text" name="nome" [(ngModel)]="novoCliente.nome" required>
+                </div>
+
+                <div class="input-full">
+                    <label for="">CPF ou CNPJ</label>
+                    <input type="text" name="cpf_cnpj" [(ngModel)]="novoCliente.cpf_cnpj" required>
+                </div>
+
+                <div class="input-half">
+                    <label for="">E-mail</label>
+                    <input type="text" name="email" [(ngModel)]="novoCliente.email" required>
+                </div>
+
+                <div class="input-half">
+                    <label for="">Tipo de Pessoa</label>
+                    <select name = "tipo_pessoa" [(ngModel)]="novoCliente.tipo_pessoa" required>
+                        <option value="PF">Pessoa Física</option>
+                        <option value="PJ">Pessoa Jurídica</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="input-half">
+                    <label for="">CEP</label>
+                    <input type="text" name="cep" [(ngModel)]="novoCliente.cep">
+                </div>
+
+                <div class="input-half">
+                    <label for="">Logradouro</label>
+                    <input type="text" name="logradouro" [(ngModel)]="novoCliente.logradouro">
+                </div>
+
+                <div class="input-quarter">
+                    <label for="">Numero</label>
+                    <input type="text" name="numero" [(ngModel)]="novoCliente.numero" required>
+                </div>
+
+                <div class="input-half">
+                    <label for="">Bairro</label>
+                    <input type="text" name="bairro" [(ngModel)]="novoCliente.bairro" required>
+                </div>
+
+                <div class="input-half">
+                    <label for="">Cidade</label>
+                    <input type="text" name="cidade" [(ngModel)]="novoCliente.cidade" required>
+                </div>
+
+                <div class="input-quarter">
+                    <label for="">UF</label>
+                    <input type="text" name="uf" [(ngModel)]="novoCliente.uf" required>
+                </div>
+            </div>
+    
+
+            <div class="form-actions">
+                <button type="button" class="btn-cancelar"> Cancelar </button>
+                <button type="submit" class="btn-salvar"> Finalizar Cadastro</button>
+            </div>
+        </form>
+    </section>
+</main>
