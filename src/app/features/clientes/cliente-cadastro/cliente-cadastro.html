@@ -70,7 +70,7 @@
 
             <div class="form-actions">
                 <button type="button" class="btn-cancelar"> Cancelar </button>
-                <button type="submit" class="btn-salvar"> Finalizar Cadastro</button>
+                <button *temPermissao="'cliente:cadastrar'" type="submit" class="btn-salvar"> Finalizar Cadastro</button>
             </div>
         </form>
     </section>

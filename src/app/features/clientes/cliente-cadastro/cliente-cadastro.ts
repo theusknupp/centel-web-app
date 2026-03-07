@@ -4,10 +4,11 @@ import { Cliente } from '../../../models/cliente';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { TemPermissaoDirective } from '../../../shared/components/permissoes/tem-permissao.directive';
 
 @Component({
   selector: 'app-cliente-cadastro',
-  imports: [Navbar, FormsModule, CommonModule],
+  imports: [Navbar, FormsModule, CommonModule, TemPermissaoDirective],
   templateUrl: './cliente-cadastro.html',
   styleUrl: './cliente-cadastro.scss',
 })

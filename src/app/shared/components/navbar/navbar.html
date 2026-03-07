@@ -6,7 +6,9 @@
     <nav>
       <ul class="nav-links">
         <li><a href="#" class="active">Ordens</a></li>
-        <li><a routerLink="/cadastro" rounterLinkActive="active">Cadastro</a></li>
+        <li *temPermissao="'cliente:visualizar'">
+          <a routerLink="/cadastro" routerLinkActive="active">Cadastro</a>
+        </li>
         <li><a href="#">Lista</a></li>
         <li><a href="#">Estoque</a></li>
         <li><a href="#">Relatório</a></li>
