@@ -92,3 +92,12 @@
   (aoConfirmar)="inserirCliente()"
   (aoCancelar)="fecharModalSemSalvar()">
 </app-modal-confirmacao>
+
+<!--Modal de Retorno-->
+<app-modal-retorno
+  *ngIf="modalRetorno"
+  [titulo]="tituloRetorno"
+  [mensagem]="mensagemRetorno"
+  textoBotaoConfirmar="Entendido"
+  (aoConfirmar)="fecharModalRetorno()">
+</app-modal-retorno>

@@ -2,3 +2,24 @@
 * {
     margin: 0;
 }
+
+/* --- ANIMAÇÕES DA MODAL --- */
+
+/* Animação para o fundo escuro: vai da transparência total até o fundo visível */
+@keyframes fadeInBackdrop {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Animação para a caixa: começa invisível, um pouco menor e mais para baixo, 
+   e termina no tamanho normal e na posição original */
+@keyframes slideUpFade {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

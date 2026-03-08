@@ -5,10 +5,11 @@ import { SupabaseService } from '../../../core/services/supabase.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ModalConfirmacao } from '../../../shared/components/modal-confirmacao/modal-confirmacao';
+import { ModalRetorno } from '../../../shared/components/modal-retorno/modal-retorno';
 
 @Component({
   selector: 'app-cliente-cadastro',
-  imports: [Navbar, FormsModule, CommonModule, ModalConfirmacao],
+  imports: [Navbar, FormsModule, CommonModule, ModalConfirmacao, ModalRetorno],
   templateUrl: './cliente-cadastro.html',
   styleUrl: './cliente-cadastro.scss',
 })
@@ -16,7 +17,12 @@ import { ModalConfirmacao } from '../../../shared/components/modal-confirmacao/m
 export class ClienteCadastro {
 
   modalConfirmacao = false;
+  modalRetorno = false;
   carregando = false;
+
+  //Variaveis que uso na modal de retorno
+  tituloRetorno: string = '';
+  mensagemRetorno: string = '';
 
   //Criando novo cliente
   novoCliente: Cliente = {
@@ -39,7 +45,6 @@ export class ClienteCadastro {
 
   //ao clicar pra Salvar, chama a modal de confirmação
   salvarCliente() {
-    this.carregando = true; 
     this.modalConfirmacao = true;
   }
   
@@ -61,19 +66,32 @@ export class ClienteCadastro {
         .insert([this.novoCliente]);
 
         if (error) {
-          alert ('Erro ao cadastrar: ' +error.message);
+          //Se der erro atribui as mensagens a modal e chama
+          this.tituloRetorno = 'Falha'
+          this.mensagemRetorno= 'Erro ao cadastrar Cliente ' +error.message;        
+          this.modalRetorno = true;
         } else {
-          alert('Cliente cadastrado com sucesso!');
+           //Se der erro atribui as mensagens a modal e chama
+          this.tituloRetorno = 'Cadastrado'
+          this.mensagemRetorno= 'Cliente cadastrado com sucesso!';      
+          this.modalRetorno = true;
+
           this.limparFormulario();
         }
 
       } catch(err) {
-        console.error(err)
-        alert('Ocorreu um erro inesperado')
+        this.tituloRetorno = 'Erro de Sistema';
+        this.mensagemRetorno = 'Ocorreu um erro inesperado de conexão.';
+        this.modalRetorno = true;
 
       } finally {
         this.carregando = false;
       }
+  }
+
+  //Quando clica no Ok da modal de retorno.
+  fecharModalRetorno() {
+    this.modalRetorno = false;
   }
 
   //Se clicar em cancelar, limpa o formulário

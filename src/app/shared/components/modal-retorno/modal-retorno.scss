@@ -58,22 +58,6 @@ footer {
   gap: 15px; /* Espaço entre o botão de cancelar e o de confirmar */
 }
 
-/* Botão de Cancela */
-.btn-cancelar {
-  background: transparent;
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-}
-
 /* Botão de Confirmar (Design de destaque com a cor principal) */
 .btn-confirmar {
   background: #20c997;
