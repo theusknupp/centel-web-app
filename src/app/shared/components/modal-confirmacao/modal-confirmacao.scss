@@ -1,0 +1,88 @@
+/* A cortina que trava a tela */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  
+  background: rgba(0, 0, 0, 0.7);
+  
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999; 
+}
+
+/* A caixa flutuante da modal */
+.modal-box {
+  background: #0b3d2e;
+  color: #ffffff;
+  /* Borda sutil para acabamento */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 30px;
+  /* Define uma largura agradável que não esmaga o texto, mas se adapta em telas menores (90%) */
+  max-width: 450px;
+  width: 90%;
+  /* Sombra pesada para criar sensação de profundidade e flutuação */
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  
+  header h2 {
+    color: #20c997; /* Verde claro de destaque para o título */
+    margin: 0 0 15px 0;
+    font-size: 1.5rem;
+  }
+
+  main p {
+    font-size: 1.05rem;
+    line-height: 1.5;
+    margin: 0 0 25px 0;
+    opacity: 0.9;
+  }
+}
+
+/* Agrupa os botões no lado direito do rodapé */
+footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px; /* Espaço entre o botão de cancelar e o de confirmar */
+}
+
+/* Botão de Cancela */
+.btn-cancelar {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Botão de Confirmar (Design de destaque com a cor principal) */
+.btn-confirmar {
+  background: #20c997;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    /* Escurece levemente o verde e sobe o botão simulando clique 3D */
+    background: #1aa179;
+    transform: translateY(-2px);
+  }
+}

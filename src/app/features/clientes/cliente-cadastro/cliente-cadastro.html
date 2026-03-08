@@ -8,6 +8,7 @@
             <p>Preencha os dados para registrar um Cliente.</p>
         </header>
 
+        <!--A função de Salvar o Cliente é chamada através do NgSubmit-->
         <form (ngSubmit)="salvarCliente()" class="form-grid">
 
             <div class="form-section">
@@ -74,9 +75,20 @@
     
 
             <div class="form-actions">
-                <button type="button" class="btn-cancelar"> Cancelar </button>
+                <button type="button" class="btn-cancelar" onclick="limparFormulario()"> Cancelar </button>
                 <button type="submit" class="btn-salvar"> Finalizar Cadastro</button>
             </div>
         </form>
     </section>
 </main>
+
+<!--Modal de Confirmação-->
+<app-modal-confirmacao 
+  *ngIf="modalConfirmacao"
+  titulo="Confirmar Cadastro"
+  mensagem="Tem a certeza que os dados do cliente foram preenchidos corretamente e deseja prosseguir com o registo?"
+  textoBotaoConfirmar="Confirmar"
+  textoBotaoCancelar="Cancelar"
+  (aoConfirmar)="inserirCliente()"
+  (aoCancelar)="fecharModalSemSalvar()">
+</app-modal-confirmacao>

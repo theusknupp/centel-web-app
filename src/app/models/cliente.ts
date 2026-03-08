@@ -6,7 +6,7 @@ export interface Cliente {
     email: string;
     cep: string;
     logradouro: string;
-    numero: number;
+    numero: string;
     bairro: string;
     cidade: string;
     uf: string;
