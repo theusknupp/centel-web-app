@@ -19,6 +19,7 @@ export class ClienteCadastro {
   novoCliente: Cliente = {
     nome: '',
     cpf_cnpj: '',
+    nrtel: '',
     email: '',
     cep: '',
     logradouro: '',

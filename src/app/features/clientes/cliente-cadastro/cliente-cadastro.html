@@ -16,14 +16,19 @@
                     <input type="text" name="nome" [(ngModel)]="novoCliente.nome" required>
                 </div>
 
-                <div class="input-full">
+                <div class="input-half">
                     <label for="">CPF ou CNPJ</label>
                     <input type="text" name="cpf_cnpj" [(ngModel)]="novoCliente.cpf_cnpj" required>
                 </div>
 
                 <div class="input-half">
+                    <label for="">Telefone</label>
+                    <input type="text" name="nrtel" [(ngModel)]="novoCliente.nrtel" placeholder="(XX) 9XXXX-XXXX" required>
+                </div>
+
+                <div class="input-half">
                     <label for="">E-mail</label>
-                    <input type="text" name="email" [(ngModel)]="novoCliente.email" required>
+                    <input type="text" name="email" [(ngModel)]="novoCliente.email" placeholder="exemplo@email.com" required>
                 </div>
 
                 <div class="input-half">
