@@ -18,9 +18,9 @@ export interface OrdemServico {
   numero_serie: string;
   acessorios_deixados: string;
   relato_cliente: string;
-  data_previsao: string;
-  atividade_realizada: string;
+  data_previsao: string | null;
+  atividade_realizada: string | null;
   pecas_trocadas: string;
-  data_conclusao: string;
-  valor_total: number;
+  data_conclusao: string | null;
+  valor_total: number | null;
 }

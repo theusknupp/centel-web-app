@@ -22,7 +22,7 @@
             <label>Cliente Vinculado *</label>
             <select name="cliente_id" [(ngModel)]="novaOs.cliente_id" required>
               <option [value]="null" disabled selected>Selecione um cliente...</option>
-              <option *ngFor="let c of listaClientes" [value]="c.nome">{{ c.nome }}</option>
+              <option *ngFor="let c of listaClientes" [value]="c.id">{{ c.nome }}</option>
             </select>
           </div>
 
@@ -85,8 +85,8 @@
         <div class="form-section">
           
           <div class="input-full">
-            <label>Atividade Realizada *</label>
-            <textarea name="atividade_realizada" [(ngModel)]="novaOs.atividade_realizada" rows="3" required placeholder="Descreva o procedimento executado passo a passo..."></textarea>
+            <label>Atividade Realizada</label>
+            <textarea name="atividade_realizada" [(ngModel)]="novaOs.atividade_realizada" rows="3" placeholder="Descreva o procedimento executado passo a passo..."></textarea>
           </div>
 
           <div class="input-half">

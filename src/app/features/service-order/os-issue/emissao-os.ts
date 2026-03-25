@@ -37,8 +37,13 @@ export class EmissaoOs implements OnInit {
 
   // Object.values converte o Enum em um Array comum para o HTML (ngFor) poder ler
   opcoesStatusOS = Object.values(StatusOS);
+  // opcoesStatusOS = Object.entries(StatusOS).map(([key, value]) => ({ key, value }));
+
   opcoesStatusPagamento = Object.values(StatusPagamento);
+  // opcoesStatusPagamento = Object.entries(StatusPagamento).map(([key, value]) => ({ key, value }));
+
   opcoesTipoDefeito = Object.values(TipoDefeito);
+  // opcoesTipoDefeito = Object.entries(TipoDefeito).map(([key, value]) => ({ key, value }));
 
 
   // Lista de OSs para a tabela
@@ -64,9 +69,16 @@ export class EmissaoOs implements OnInit {
       status_servico: StatusOS.AguardandoTecnico,
       status_pagamento: StatusPagamento.Pendente,
       defeito_constatado: TipoDefeito.NaoIdentificado,
-      equipamento: '', marca_modelo: '', numero_serie: '', acessorios_deixados: '',
-      relato_cliente: '', data_previsao: '', atividade_realizada: '',
-      pecas_trocadas: '', data_conclusao: '', valor_total: 0
+      equipamento: '',
+      marca_modelo: '',
+      numero_serie: '',
+      acessorios_deixados: '',
+      relato_cliente: '',
+      data_previsao: '',
+      atividade_realizada: '',
+      pecas_trocadas: '',
+      data_conclusao: '',
+      valor_total: 0
     };
   }
 
@@ -75,21 +87,29 @@ export class EmissaoOs implements OnInit {
   // O ngOnInit executa sozinho assim que a tela carrega
 
   ngOnInit() {
-    this.carregarDadosEssenciais();
-    this.buscarOrdensServico();
+    this.carregarDadosEssenciais().then(() => {
+      this.buscarOrdensServico();
+    });
   }
 
   // Busca os clientes, serviços e técnicos cadastrados no banco para o usuário poder selecionar
   async carregarDadosEssenciais() {
     try {
       //Dados pra preencher as listas
-      const clienteReq = await this.supabaseService.getClient().from('clientes').select('nome');
+      const clienteReq = await this.supabaseService.getClient().from('clientes').select('id,nome');
       const servicoReq = await this.supabaseService.getClient().from('tipos_servicos').select('id, descricao');
       const tecnicoReq = await this.supabaseService.getClient().from('tecnicos').select('id, nome');
 
       if (clienteReq.data) this.listaClientes = clienteReq.data;
       if (servicoReq.data) this.listaTiposServico = servicoReq.data;
+
+      this.listaTiposServico.push({ id: 1, descricao: 'Tipo de Serviço 1' }); // Opção "Outro" para tipos de serviço
+      this.listaTiposServico.push({ id: 2, descricao: 'Tipo de Serviço 2' }); // Opção "Outro" para tipos de serviço
+
       if (tecnicoReq.data) this.listaTecnicos = tecnicoReq.data;
+
+      this.listaTecnicos.push({ id: 1, nome: 'Técnico 1' }); // Opção "Outro" para técnicos
+      this.listaTecnicos.push({ id: 2, nome: 'Técnico 2' }); // Opção "Outro" para técnicos
     } catch (err) {
       this.tituloRetorno = 'Erro!'
       this.mensagemRetorno = 'Erro ao buscar dados do banco' +err;
@@ -139,9 +159,24 @@ export class EmissaoOs implements OnInit {
         .select('*')
         .order('id', { ascending: false });
       if (error) throw error;
-      // Opcional: buscar nome do cliente para exibir na tabela
-      this.listaOrdensServico = data || [];
-    } catch (err) {
+      // Adicionar nome do cliente à lista de OSs
+      this.listaOrdensServico = (data || []).map((os: any) => {
+        // Buscar nome do cliente na listaClientes
+        const cliente = this.listaClientes.find(c => c.id === os.cliente_id);
+        os.cliente_nome = cliente ? cliente.nome : os.cliente_id;
+        // Formatar data_conclusao de UTC para horário local no formato yyyy-MM-ddThh:mm
+        if (os.data_conclusao) {
+          const date = new Date(os.data_conclusao);
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          const hours = String(date.getHours()).padStart(2, '0');
+          const minutes = String(date.getMinutes()).padStart(2, '0');
+          os.data_conclusao = `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+        return os;
+      });
+    } catch (err: any) {
       this.tituloRetorno = 'Erro!';
       this.mensagemRetorno = 'Erro ao buscar ordens de serviço: ' + err.message;
       this.modalRetorno = true;
@@ -152,9 +187,23 @@ export class EmissaoOs implements OnInit {
     this.modalConfirmacao = false;
     this.carregando = true;
     try {
+      // Converter data_conclusao do horário local para UTC antes de salvar
+      const osParaSalvar: OrdemServico = { ...this.novaOs };
+      console.log(osParaSalvar);
+
+      if (osParaSalvar.data_previsao === "") osParaSalvar.data_previsao = null;
+      if (osParaSalvar.data_conclusao === "") osParaSalvar.data_conclusao = null;
+      if (!osParaSalvar.tecnico_id) osParaSalvar.tecnico_id = null;
+
+      if (osParaSalvar.data_conclusao) {
+        // data_conclusao está no formato yyyy-MM-ddThh:mm (local)
+        const localDate = new Date(osParaSalvar.data_conclusao);
+        // Converter para string ISO UTC (sem milissegundos)
+        osParaSalvar.data_conclusao = localDate.toISOString().slice(0, 19) + 'Z';
+      }
       const { error } = await this.supabaseService.getClient()
         .from('ordens_servico')
-        .insert([this.novaOs]);
+        .insert([osParaSalvar]);
       if (error) {
         this.tituloRetorno = 'Erro na Emissão';
         this.mensagemRetorno = 'Motivo: ' + error.message;
@@ -177,6 +226,7 @@ export class EmissaoOs implements OnInit {
 
   editarOrdemServico(os: any) {
     this.editandoOsId = os.id;
+    console.log(os);
     this.novaOs = { ...os };
     // Ajusta selects se necessário (ex: enums)
   }
@@ -185,9 +235,15 @@ export class EmissaoOs implements OnInit {
     this.modalConfirmacao = false;
     this.carregando = true;
     try {
+      // Converter data_conclusao do horário local para UTC antes de atualizar
+      const osParaAtualizar: OrdemServico = { ...this.novaOs };
+      if (osParaAtualizar.data_conclusao) {
+        const localDate = new Date(osParaAtualizar.data_conclusao);
+        osParaAtualizar.data_conclusao = localDate.toISOString().slice(0, 19) + 'Z';
+      }
       const { error } = await this.supabaseService.getClient()
         .from('ordens_servico')
-        .update(this.novaOs)
+        .update(osParaAtualizar)
         .eq('id', this.editandoOsId);
       if (error) {
         this.tituloRetorno = 'Erro ao atualizar';
@@ -220,6 +276,7 @@ export class EmissaoOs implements OnInit {
   }
 
   async excluirOrdemServico(id: number) {
+    console.log("Excluindo OS #" + id);
     this.modalConfirmacao = false;
     this.carregando = true;
     try {
@@ -227,6 +284,9 @@ export class EmissaoOs implements OnInit {
         .from('ordens_servico')
         .delete()
         .eq('id', id);
+
+      console.log("----------------");
+      console.log(error);
       if (error) {
         this.tituloRetorno = 'Erro ao excluir';
         this.mensagemRetorno = 'Motivo: ' + error.message;

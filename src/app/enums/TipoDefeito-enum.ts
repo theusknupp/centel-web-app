@@ -3,7 +3,7 @@ export enum TipoDefeito {
   Fonte = 'Fonte',
   Placa =  'Placa Principal',
   DisplayTela = 'Display da Tela',
-  CurtoCircuito =  'Curto Circuíto',
+  CurtoCircuito =  'Curto Circuito',
   Conector = 'Conectores',
   Outro = 'Outro'
 }
