@@ -1,0 +1,155 @@
+/* Fonte oficial do projeto */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:host {
+  font-family: 'Inter', sans-serif;
+  display: block;
+  min-height: 100vh;
+  /* Fundo verde profundo corporativo */
+  background: linear-gradient(135deg, #0b3d2e 0%, #1e7d62 100%);
+  color: #fff;
+}
+
+.container-cadastro {
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Painel de vidro (Glassmorphism) alargado para comportar uma OS completa */
+.glass-card-grande {
+  width: 100%;
+  max-width: 1100px; 
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border-radius: 24px;
+  padding: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  
+  header {
+    margin-bottom: 30px;
+    h1 { color: #20c997; margin: 0; }
+    p { opacity: 0.7; font-size: 0.9rem; margin-top: 5px; }
+  }
+}
+
+/* Configuração do contêiner principal do formulário */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+}
+
+/* CAIXAS DE AGRUPAMENTO VISUAL (FIELDSETS) */
+.form-fieldset {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 25px;
+  margin: 0;
+  /* Dá uma leve escurecida no fundo para destacar a caixa do resto da tela */
+  background: rgba(0, 0, 0, 0.1); 
+
+  /* O título da caixa (Legend) cortando a borda superior */
+  legend {
+    color: #20c997;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 0 10px;
+  }
+}
+
+/* Classe exclusiva para dar um tom diferenciado na área do técnico */
+.tech-area {
+  border-color: rgba(32, 201, 151, 0.4); 
+  background: rgba(32, 201, 151, 0.05);
+}
+
+/* Malha interna de cada caixa: 4 colunas perfeitamente divididas */
+.form-section {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 15px;
+}
+
+/* Controladores de largura baseados na malha de 4 colunas */
+.input-full { grid-column: span 4; } 
+.input-half { grid-column: span 2; } 
+.input-quarter { grid-column: span 1; } 
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 5px;
+  opacity: 0.8;
+}
+
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  
+  box-sizing: border-box; 
+  
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s;
+
+  &:focus {
+    outline: none;
+    border-color: #20c997;
+    background: rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Resolve a legibilidade das opções nativas do HTML nos selects */
+select option {
+  background: #1e1e1e;
+  color: #fff;
+}
+
+/* Layout dos botões de rodapé do formulário */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 25px;
+  margin-top: 10px;
+}
+
+.btn-salvar {
+  background: #20c997;
+  color: #fff;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  
+  &:hover { background: #1aa179; }
+  &:disabled { background: #555; cursor: not-allowed; }
+}
+
+.btn-cancelar {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  
+  &:hover { background: rgba(255, 255, 255, 0.1); }
+}
+
+/* Mensagem centralizada enquanto o Supabase responde */
+.loading-msg {
+  text-align: center;
+  color: #20c997;
+  font-size: 1.2rem;
+  padding: 40px;
+}

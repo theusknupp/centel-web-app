@@ -1,0 +1,170 @@
+<app-navbar></app-navbar>
+
+<main class="container-cadastro">
+  <section class="glass-card-grande">
+    <header>
+      <h1>Emissão de Ordem de Serviço</h1>
+      <p>Preencha os dados do equipamento, relato do cliente e as informações técnicas.</p>
+    </header>
+
+    <div *ngIf="carregandoDadosIniciais" class="loading-msg">
+      Carregando dados do sistema...
+    </div>
+
+    <!--Quando dados Iniciais forem carregados-->
+    <form *ngIf="!carregandoDadosIniciais" (ngSubmit)="salvarOs()" class="form-grid">
+      
+      <fieldset class="form-fieldset">
+        <legend>Dados Principais</legend>
+        <div class="form-section">
+          
+          <div class="input-half">
+            <label>Cliente Vinculado *</label>
+            <select name="cliente_id" [(ngModel)]="novaOs.cliente_id" required>
+              <option [value]="null" disabled selected>Selecione um cliente...</option>
+              <option *ngFor="let c of listaClientes" [value]="c.nome">{{ c.nome }}</option>
+            </select>
+          </div>
+
+          <div class="input-quarter">
+            <label>Tipo de Serviço *</label>
+            <select name="tipo_servico_id" [(ngModel)]="novaOs.tipo_servico_id" required>
+              <option [value]="null" disabled selected>Selecione...</option>
+              <option *ngFor="let s of listaTiposServico" [value]="s.id">{{ s.descricao }}</option>
+            </select>
+          </div>
+
+          <div class="input-quarter">
+            <label>Técnico Responsável</label>
+            <select name="tecnico_id" [(ngModel)]="novaOs.tecnico_id">
+              <option [value]="null">Não definido (Opcional)</option>
+              <option *ngFor="let t of listaTecnicos" [value]="t.id">{{ t.nome }}</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="form-fieldset">
+        <legend>Equipamento e Relato</legend>
+        <div class="form-section">
+          
+          <div class="input-quarter">
+            <label>Equipamento *</label>
+            <input type="text" name="equipamento" [(ngModel)]="novaOs.equipamento" placeholder="Ex: Mesa de Som" required>
+          </div>
+
+          <div class="input-quarter">
+            <label>Marca / Modelo *</label>
+            <input type="text" name="marca_modelo" [(ngModel)]="novaOs.marca_modelo" required>
+          </div>
+
+          <div class="input-quarter">
+            <label>Número de Série</label>
+            <input type="text" name="numero_serie" [(ngModel)]="novaOs.numero_serie">
+          </div>
+
+          <div class="input-quarter">
+            <label>Data de Previsão</label>
+            <input type="date" name="data_previsao" [(ngModel)]="novaOs.data_previsao">
+          </div>
+
+          <div class="input-half">
+            <label>Acessórios Deixados</label>
+            <input type="text" name="acessorios_deixados" [(ngModel)]="novaOs.acessorios_deixados" placeholder="Cabos, fontes, cases...">
+          </div>
+
+          <div class="input-half">
+            <label>Relato do Cliente (Defeito Reclamado)</label>
+            <textarea name="relato_cliente" [(ngModel)]="novaOs.relato_cliente" rows="2" placeholder="Descreva o que o cliente relatou..."></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="form-fieldset tech-area">
+        <legend>Preenchimento Técnico</legend>
+        <div class="form-section">
+          
+          <div class="input-full">
+            <label>Atividade Realizada *</label>
+            <textarea name="atividade_realizada" [(ngModel)]="novaOs.atividade_realizada" rows="3" required placeholder="Descreva o procedimento executado passo a passo..."></textarea>
+          </div>
+
+          <div class="input-half">
+            <label>Defeito Constatado</label>
+            <select name="defeito_constatado" [(ngModel)]="novaOs.defeito_constatado">
+              <option *ngFor="let defeito of opcoesTipoDefeito" [value]="defeito">
+                {{ defeito }}
+              </option>
+            </select>
+          </div>
+
+          <div class="input-half">
+            <label>Peças Trocadas (Opcional)</label>
+            <input type="text" name="pecas_trocadas" [(ngModel)]="novaOs.pecas_trocadas" placeholder="Liste as peças substituídas...">
+          </div>
+
+          <div class="input-quarter">
+            <label>Data/Hora Final (Conclusão)</label>
+            <input type="datetime-local" name="data_conclusao" [(ngModel)]="novaOs.data_conclusao">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="form-fieldset">
+        <legend>Fechamento e Valores</legend>
+        <div class="form-section">
+          
+          <div class="input-quarter">
+            <label>Status do Serviço</label>
+            <select name="status_servico" [(ngModel)]="novaOs.status_servico">
+              <option *ngFor="let status of opcoesStatusOS" [value]="status">
+                {{ status }}
+              </option>
+            </select>
+          </div>
+
+          <div class="input-quarter">
+            <label>Status Pagamento</label>
+            <select name="status_pagamento" [(ngModel)]="novaOs.status_pagamento">
+               <option *ngFor="let pag of opcoesStatusPagamento" [value]="pag">
+                {{ pag }}
+              </option>
+            </select>
+          </div>
+
+          <div class="input-half">
+            <label>Valor Total (R$)</label>
+            <input type="number" step="0.01" name="valor_total" [(ngModel)]="novaOs.valor_total">
+          </div>
+
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancelar" (click)="limparFormulario()">Limpar Dados</button>
+        <button type="submit" class="btn-salvar" [disabled]="carregando">
+          {{ carregando ? 'A processar...' : 'Emitir Ordem de Serviço' }}
+        </button>
+      </div>
+
+    </form>
+  </section>
+</main>
+
+<app-modal-confirmacao 
+  *ngIf="modalConfirmacao"
+  titulo="Confirmar Emissão"
+  mensagem="Tem certeza que todos os dados da OS estão corretos? Esta ação registrará o serviço no sistema."
+  textoBotaoConfirmar="Sim, Emitir OS"
+  textoBotaoCancelar="Revisar"
+  (aoConfirmar)="inserirOrdemServico()"
+  (aoCancelar)="fecharModalSemSalvar()">
+</app-modal-confirmacao>
+
+<app-modal-retorno
+  *ngIf="modalRetorno"
+  [titulo]="tituloRetorno"
+  [mensagem]="mensagemRetorno"
+  textoBotaoConfirmar="Entendido"
+  (aoConfirmar)="fecharModalRetorno()">
+</app-modal-retorno>
