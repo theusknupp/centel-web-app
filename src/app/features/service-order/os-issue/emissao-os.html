@@ -148,16 +148,46 @@
       </div>
 
     </form>
+
+    <!-- Tabela de listagem de OSs -->
+    <section *ngIf="!carregandoDadosIniciais" class="os-table-section">
+      <h2>Ordens de Serviço Registradas</h2>
+      <table class="os-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Equipamento</th>
+            <th>Status</th>
+            <th>Valor (R$)</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let os of listaOrdensServico">
+            <td>{{ os.id }}</td>
+            <td>{{ os.cliente_nome || os.cliente_id }}</td>
+            <td>{{ os.equipamento }}</td>
+            <td>{{ os.status_servico }}</td>
+            <td>{{ os.valor_total | number:'1.2-2' }}</td>
+            <td>
+              <button class="btn-editar" (click)="editarOrdemServico(os)">Editar</button>
+              <button class="btn-excluir" (click)="confirmarExclusao(os)">Excluir</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
   </section>
 </main>
 
 <app-modal-confirmacao 
   *ngIf="modalConfirmacao"
-  titulo="Confirmar Emissão"
-  mensagem="Tem certeza que todos os dados da OS estão corretos? Esta ação registrará o serviço no sistema."
-  textoBotaoConfirmar="Sim, Emitir OS"
-  textoBotaoCancelar="Revisar"
-  (aoConfirmar)="inserirOrdemServico()"
+  [titulo]="tituloConfirmacao"
+  [mensagem]="mensagemConfirmacao"
+  textoBotaoConfirmar="{{ textoBotaoConfirmar }}"
+  textoBotaoCancelar="{{ textoBotaoCancelar }}"
+  (aoConfirmar)="acaoConfirmacao()"
   (aoCancelar)="fecharModalSemSalvar()">
 </app-modal-confirmacao>
 

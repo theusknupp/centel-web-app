@@ -40,27 +40,43 @@ export class EmissaoOs implements OnInit {
   opcoesStatusPagamento = Object.values(StatusPagamento);
   opcoesTipoDefeito = Object.values(TipoDefeito);
 
-  // Inicialização do objeto seguindo as regras da Interface e dos Enums
-  novaOs: OrdemServico = {
-    cliente_id: null,
-    tipo_servico_id: null,
-    tecnico_id: null,
-    
-    // Status padrões ao abrir uma nova Ordem de Serviço
-    status_servico: StatusOS.AguardandoTecnico,
-    status_pagamento: StatusPagamento.Pendente,
-    defeito_constatado: TipoDefeito.NaoIdentificado,
-    
-    equipamento: '', marca_modelo: '', numero_serie: '', acessorios_deixados: '',
-    relato_cliente: '', data_previsao: '', atividade_realizada: '',
-    pecas_trocadas: '', data_conclusao: '', valor_total: 0
-  };
+
+  // Lista de OSs para a tabela
+  listaOrdensServico: any[] = [];
+
+  // Controle de edição
+  editandoOsId: number | null = null;
+
+  // Controle dos modais de confirmação
+  tituloConfirmacao = 'Confirmar Emissão';
+  mensagemConfirmacao = 'Tem certeza que todos os dados da OS estão corretos? Esta ação registrará o serviço no sistema.';
+  textoBotaoConfirmar = 'Sim, Emitir OS';
+  textoBotaoCancelar = 'Revisar';
+  acaoConfirmacao = () => this.inserirOrdemServico();
+
+  novaOs: OrdemServico = this.criarNovaOs();
+
+  criarNovaOs(): OrdemServico {
+    return {
+      cliente_id: null,
+      tipo_servico_id: null,
+      tecnico_id: null,
+      status_servico: StatusOS.AguardandoTecnico,
+      status_pagamento: StatusPagamento.Pendente,
+      defeito_constatado: TipoDefeito.NaoIdentificado,
+      equipamento: '', marca_modelo: '', numero_serie: '', acessorios_deixados: '',
+      relato_cliente: '', data_previsao: '', atividade_realizada: '',
+      pecas_trocadas: '', data_conclusao: '', valor_total: 0
+    };
+  }
 
   constructor(private supabaseService: SupabaseService) {}
 
   // O ngOnInit executa sozinho assim que a tela carrega
+
   ngOnInit() {
     this.carregarDadosEssenciais();
+    this.buscarOrdensServico();
   }
 
   // Busca os clientes, serviços e técnicos cadastrados no banco para o usuário poder selecionar
@@ -83,10 +99,24 @@ export class EmissaoOs implements OnInit {
     }
   }
 
+
   // --- CONTROLE DAS MODAIS ---
 
   salvarOs() {
-    // Apenas exibe a pergunta de confirmação
+    // Define ação e textos do modal de acordo com edição ou criação
+    if (this.editandoOsId) {
+      this.tituloConfirmacao = 'Confirmar Alteração';
+      this.mensagemConfirmacao = 'Deseja salvar as alterações desta Ordem de Serviço?';
+      this.textoBotaoConfirmar = 'Salvar Alteração';
+      this.textoBotaoCancelar = 'Cancelar';
+      this.acaoConfirmacao = () => this.atualizarOrdemServico();
+    } else {
+      this.tituloConfirmacao = 'Confirmar Emissão';
+      this.mensagemConfirmacao = 'Tem certeza que todos os dados da OS estão corretos? Esta ação registrará o serviço no sistema.';
+      this.textoBotaoConfirmar = 'Sim, Emitir OS';
+      this.textoBotaoCancelar = 'Revisar';
+      this.acaoConfirmacao = () => this.inserirOrdemServico();
+    }
     this.modalConfirmacao = true;
   }
 
@@ -100,31 +130,114 @@ export class EmissaoOs implements OnInit {
 
   // --- OPERAÇÃO DE BANCO DE DADOS ---
 
-  async inserirOrdemServico() {
-    this.modalConfirmacao = false; // Fecha a pergunta
-    this.carregando = true; // Ativa visual de processamento no botão
 
+  // CRUD principal
+  async buscarOrdensServico() {
     try {
+      const { data, error } = await this.supabaseService.getClient()
+        .from('ordens_servico')
+        .select('*')
+        .order('id', { ascending: false });
+      if (error) throw error;
+      // Opcional: buscar nome do cliente para exibir na tabela
+      this.listaOrdensServico = data || [];
+    } catch (err) {
+      this.tituloRetorno = 'Erro!';
+      this.mensagemRetorno = 'Erro ao buscar ordens de serviço: ' + err.message;
+      this.modalRetorno = true;
+    }
+  }
 
-      // Executa o Insert
+  async inserirOrdemServico() {
+    this.modalConfirmacao = false;
+    this.carregando = true;
+    try {
       const { error } = await this.supabaseService.getClient()
         .from('ordens_servico')
         .insert([this.novaOs]);
-
       if (error) {
-        // Alimenta a modal de retorno com a mensagem de erro
         this.tituloRetorno = 'Erro na Emissão';
         this.mensagemRetorno = 'Motivo: ' + error.message;
         this.modalRetorno = true;
-        
       } else {
-        // Alimenta a modal de retorno com o sucesso
         this.tituloRetorno = 'Sucesso!';
         this.mensagemRetorno = 'Ordem de Serviço gerada e registrada no sistema.';
         this.modalRetorno = true;
-        this.limparFormulario(); // Limpa apenas em caso de sucesso absoluto
+        this.limparFormulario();
+        this.buscarOrdensServico();
       }
+    } catch (err) {
+      this.tituloRetorno = 'Erro de Conexão';
+      this.mensagemRetorno = 'Falha crítica ao tentar contatar o servidor.';
+      this.modalRetorno = true;
+    } finally {
+      this.carregando = false;
+    }
+  }
 
+  editarOrdemServico(os: any) {
+    this.editandoOsId = os.id;
+    this.novaOs = { ...os };
+    // Ajusta selects se necessário (ex: enums)
+  }
+
+  async atualizarOrdemServico() {
+    this.modalConfirmacao = false;
+    this.carregando = true;
+    try {
+      const { error } = await this.supabaseService.getClient()
+        .from('ordens_servico')
+        .update(this.novaOs)
+        .eq('id', this.editandoOsId);
+      if (error) {
+        this.tituloRetorno = 'Erro ao atualizar';
+        this.mensagemRetorno = 'Motivo: ' + error.message;
+        this.modalRetorno = true;
+      } else {
+        this.tituloRetorno = 'Alteração salva!';
+        this.mensagemRetorno = 'Ordem de Serviço atualizada com sucesso.';
+        this.modalRetorno = true;
+        this.limparFormulario();
+        this.buscarOrdensServico();
+        this.editandoOsId = null;
+      }
+    } catch (err) {
+      this.tituloRetorno = 'Erro de Conexão';
+      this.mensagemRetorno = 'Falha crítica ao tentar contatar o servidor.';
+      this.modalRetorno = true;
+    } finally {
+      this.carregando = false;
+    }
+  }
+
+  confirmarExclusao(os: any) {
+    this.tituloConfirmacao = 'Confirmar Exclusão';
+    this.mensagemConfirmacao = `Deseja realmente excluir a OS #${os.id}? Esta ação não poderá ser desfeita.`;
+    this.textoBotaoConfirmar = 'Excluir';
+    this.textoBotaoCancelar = 'Cancelar';
+    this.acaoConfirmacao = () => this.excluirOrdemServico(os.id);
+    this.modalConfirmacao = true;
+  }
+
+  async excluirOrdemServico(id: number) {
+    this.modalConfirmacao = false;
+    this.carregando = true;
+    try {
+      const { error } = await this.supabaseService.getClient()
+        .from('ordens_servico')
+        .delete()
+        .eq('id', id);
+      if (error) {
+        this.tituloRetorno = 'Erro ao excluir';
+        this.mensagemRetorno = 'Motivo: ' + error.message;
+        this.modalRetorno = true;
+      } else {
+        this.tituloRetorno = 'Excluído!';
+        this.mensagemRetorno = 'Ordem de Serviço excluída com sucesso.';
+        this.modalRetorno = true;
+        this.buscarOrdensServico();
+        if (this.editandoOsId === id) this.limparFormulario();
+      }
     } catch (err) {
       this.tituloRetorno = 'Erro de Conexão';
       this.mensagemRetorno = 'Falha crítica ao tentar contatar o servidor.';
@@ -136,14 +249,7 @@ export class EmissaoOs implements OnInit {
 
   // Reseta os campos mantendo os Enums padrão
   limparFormulario() {
-    this.novaOs = {
-      cliente_id: null, tipo_servico_id: null, tecnico_id: null,
-      status_servico: StatusOS.AguardandoTecnico,
-      status_pagamento: StatusPagamento.Pendente,
-      defeito_constatado: TipoDefeito.NaoIdentificado,
-      equipamento: '', marca_modelo: '', numero_serie: '', acessorios_deixados: '',
-      relato_cliente: '', data_previsao: '', atividade_realizada: '',
-      pecas_trocadas: '', data_conclusao: '', valor_total: 0
-    };
+    this.novaOs = this.criarNovaOs();
+    this.editandoOsId = null;
   }
 }
