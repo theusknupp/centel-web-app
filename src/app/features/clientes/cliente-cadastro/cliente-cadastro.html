@@ -9,7 +9,8 @@
         </header>
 
         <!--A função de Salvar o Cliente é chamada através do NgSubmit-->
-        <form (ngSubmit)="salvarCliente()" class="form-grid">
+        <!--<form (ngSubmit)="salvarCliente()" class="form-grid">-->
+        <form #form="ngForm" (ngSubmit)="form.valid && validarCpfCnpj(novoCliente.cpf_cnpj) && validarEmail(novoCliente.email) && salvarCliente()" class="form-grid">
 
             <div class="form-section">
                 <div class="input-full">
@@ -18,23 +19,59 @@
                 </div>
 
                 <div class="input-half">
-                    <label for="">CPF ou CNPJ</label>
-                    <input type="text" name="cpf_cnpj" [(ngModel)]="novoCliente.cpf_cnpj" required>
+                    <label>CPF ou CNPJ</label>
+                    <input 
+                        type="text" 
+                        name="cpf_cnpj" 
+                        [(ngModel)]="novoCliente.cpf_cnpj"
+                        #cpf="ngModel"
+                        required
+                        (input)="onCpfCnpjInput()"
+                        (keypress)="bloquearExcessoCpfCnpj($event)"
+                        [class.invalido]="cpf.invalid && cpf.touched"
+                    >
+
+                    <small *ngIf="cpf.invalid && cpf.touched">
+                        Campo obrigatório
+                    </small>
+
+                    <small *ngIf="cpf.touched && cpf.value && 
+                        ((novoCliente.tipo_pessoa === 'PF' && cpf.value.length >= 14 && !validarCpfCnpj(cpf.value)) ||
+                        (novoCliente.tipo_pessoa === 'PJ' && cpf.value.length >= 18 && !validarCpfCnpj(cpf.value)))">
+                        {{ novoCliente.tipo_pessoa === 'PF' ? 'CPF inválido' : 'CNPJ inválido' }}
+                    </small>
+
+
                 </div>
 
                 <div class="input-half">
                     <label for="">Telefone</label>
-                    <input type="text" name="nrtel" [(ngModel)]="novoCliente.nrtel" placeholder="(XX) 9XXXX-XXXX" required>
+                    <input type="text" name="nrtel" [(ngModel)]="novoCliente.nrtel" placeholder="(XX) 9XXXX-XXXX" required (input)="onTelefoneInput()" (keypress)="bloquearExcessoTelefone($event)">
                 </div>
 
                 <div class="input-half">
-                    <label for="">E-mail</label>
-                    <input type="text" name="email" [(ngModel)]="novoCliente.email" placeholder="exemplo@email.com" required>
+                    <label>E-mail</label>
+                    <input 
+                        type="email"
+                        name="email"
+                        [(ngModel)]="novoCliente.email"
+                        #email="ngModel"
+                        required
+                    >
+
+                    <small *ngIf="email.invalid && email.touched">
+                        Email obrigatório ou inválido
+                    </small>
+
+                    <small *ngIf="email.value && !validarEmail(email.value)">
+                        Email deve conter domínio válido (ex: gmail.com)
+                    </small>
                 </div>
+
 
                 <div class="input-half">
                     <label for="">Tipo de Pessoa</label>
-                    <select name = "tipo_pessoa" [(ngModel)]="novoCliente.tipo_pessoa" required>
+                    <select name = "tipo_pessoa" [(ngModel)]="novoCliente.tipo_pessoa" (change)="novoCliente.cpf_cnpj = ''" required>
                         <option value="PF">Pessoa Física</option>
                         <option value="PJ">Pessoa Jurídica</option>
                     </select>
@@ -75,8 +112,9 @@
     
 
             <div class="form-actions">
-                <button type="button" class="btn-cancelar" onclick="limparFormulario()"> Cancelar </button>
-                <button type="submit" class="btn-salvar"> Finalizar Cadastro</button>
+                <!--<button type="button" class="btn-cancelar" onclick="limparFormulario()"> Cancelar </button>-->
+                <button type="button" class="btn-cancelar" (click)="limparFormulario()"> Cancelar </button>
+                <button type="submit" class="btn-salvar" [disabled]="!form.valid || !validarCpfCnpj(novoCliente.cpf_cnpj) || !validarEmail(novoCliente.email)"> Finalizar Cadastro</button>
             </div>
         </form>
     </section>
