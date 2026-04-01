@@ -22,19 +22,20 @@
                     <input type="text" name="cpf_cnpj" [(ngModel)]="novoCliente.cpf_cnpj" required>
                 </div>
 
-                <div class="input-half">
+                <!--<div class="input-half">
                     <label for="">Telefone</label>
                     <input type="text" name="nrtel" [(ngModel)]="novoCliente.nrtel" placeholder="(XX) 9XXXX-XXXX" required>
-                </div>
+                </div> -->
 
                 <div class="input-half">
                     <label for="">E-mail</label>
-                    <input type="text" name="email" [(ngModel)]="novoCliente.email" placeholder="exemplo@email.com" required>
+                    <input type="text" name="email" [(ngModel)]="novoCliente.email" placeholder="exemplo@email.com"
+                        required>
                 </div>
 
-                <div class="input-half">
+                <div class="input-full">
                     <label for="">Tipo de Pessoa</label>
-                    <select name = "tipo_pessoa" [(ngModel)]="novoCliente.tipo_pessoa" required>
+                    <select name="tipo_pessoa" [(ngModel)]="novoCliente.tipo_pessoa" required>
                         <option value="PF">Pessoa Física</option>
                         <option value="PJ">Pessoa Jurídica</option>
                     </select>
@@ -72,32 +73,52 @@
                     <input type="text" name="uf" [(ngModel)]="novoCliente.uf" required>
                 </div>
             </div>
-    
+
 
             <div class="form-actions">
-                <button type="button" class="btn-cancelar" onclick="limparFormulario()"> Cancelar </button>
+                <button type="button" class="btn-cancelar" (click)="limparFormulario()"> Cancelar </button>
                 <button type="submit" class="btn-salvar"> Finalizar Cadastro</button>
             </div>
         </form>
+
+        <!-- Listagem de Clientes Cadastrados -->
+        <section class="os-table-section">
+            <h2>Clientes Cadastrados</h2>
+            <table class="os-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>CPF / CNPJ</th>
+                        <th>E-mail</th>
+                        <th>Cidade</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let cliente of listaClientes">
+                        <td>{{ cliente.id }}</td>
+                        <td>{{ cliente.nome }}</td>
+                        <td>{{ cliente.cpf_cnpj }}</td>
+                        <td>{{ cliente.email }}</td>
+                        <td>{{ cliente.cidade }}</td>
+                        <td>
+                            <button class="btn-editar" (click)="editarCliente(cliente)">Editar</button>
+                            <button class="btn-excluir" (click)="confirmarExclusaoCliente(cliente)">Excluir</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
     </section>
 </main>
-
 <!--Modal de Confirmação-->
-<app-modal-confirmacao 
-  *ngIf="modalConfirmacao"
-  titulo="Confirmar Cadastro"
-  mensagem="Tem a certeza que os dados do cliente foram preenchidos corretamente e deseja prosseguir com o registo?"
-  textoBotaoConfirmar="Confirmar"
-  textoBotaoCancelar="Cancelar"
-  (aoConfirmar)="inserirCliente()"
-  (aoCancelar)="fecharModalSemSalvar()">
+<app-modal-confirmacao *ngIf="modalConfirmacao" [titulo]="tituloConfirmacao" [mensagem]="mensagemConfirmacao"
+    textoBotaoConfirmar="{{ textoBotaoConfirmar }}" textoBotaoCancelar="{{ textoBotaoCancelar }}"
+    (aoConfirmar)="acaoConfirmacao()" (aoCancelar)="fecharModalSemSalvar()">
 </app-modal-confirmacao>
 
 <!--Modal de Retorno-->
-<app-modal-retorno
-  *ngIf="modalRetorno"
-  [titulo]="tituloRetorno"
-  [mensagem]="mensagemRetorno"
-  textoBotaoConfirmar="Entendido"
-  (aoConfirmar)="fecharModalRetorno()">
+<app-modal-retorno *ngIf="modalRetorno" [titulo]="tituloRetorno" [mensagem]="mensagemRetorno"
+    textoBotaoConfirmar="Entendido" (aoConfirmar)="fecharModalRetorno()">
 </app-modal-retorno>
