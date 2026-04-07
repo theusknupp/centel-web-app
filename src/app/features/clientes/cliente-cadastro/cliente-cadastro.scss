@@ -90,6 +90,12 @@ select {
   }
 }
 
+/* Estado de campo inválido */
+.input-invalid {
+  border-color: #c92a2a !important;
+  box-shadow: 0 0 0 4px rgba(201, 42, 42, 0.06);
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;

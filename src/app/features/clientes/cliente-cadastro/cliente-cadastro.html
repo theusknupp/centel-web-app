@@ -14,12 +14,15 @@
             <div class="form-section">
                 <div class="input-full">
                     <label for="">Nome Completo / Razão Social</label>
-                    <input type="text" name="nome" [(ngModel)]="novoCliente.nome" required>
+                    <input type="text" name="nome" [(ngModel)]="novoCliente.nome" required
+                        (input)="nomeInvalido = false" [class.input-invalid]="nomeInvalido">
                 </div>
 
                 <div class="input-half">
                     <label for="">CPF ou CNPJ</label>
-                    <input type="text" name="cpf_cnpj" [(ngModel)]="novoCliente.cpf_cnpj" required>
+                    <input type="text" name="cpf_cnpj" [(ngModel)]="novoCliente.cpf_cnpj" required
+                        (input)="onCpfCnpjInput($event)" (blur)="validarCpfCnpjOnBlur()"
+                        [class.input-invalid]="cpfInvalido">
                 </div>
 
                 <!--<div class="input-half">
@@ -77,7 +80,8 @@
 
             <div class="form-actions">
                 <button type="button" class="btn-cancelar" (click)="limparFormulario()"> Cancelar </button>
-                <button type="submit" class="btn-salvar"> Finalizar Cadastro</button>
+                <button type="submit" class="btn-salvar">{{ editandoClienteId ? 'Atualizar Cadastro' : 'Finalizar
+                    Cadastro' }}</button>
             </div>
         </form>
 
