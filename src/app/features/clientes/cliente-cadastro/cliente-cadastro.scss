@@ -16,7 +16,7 @@
 
 .glass-card-grande {
   width: 100%;
-  max-width: 1100px; // Ajustado para acompanhar a largura da tela de Emissão de OS
+  max-width: 1100px; // Ajustado para acompanhar a largura da tela de Emissão de cliente
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(15px);
   border-radius: 24px;
@@ -124,8 +124,8 @@ select {
   cursor: pointer;
 }
 
-/* Tabela de listagem reutilizável (copiado de emissão-os.scss) */
-.os-table-section {
+/* Tabela de listagem reutilizável (copiado de emissão-cliente.scss) */
+.cliente-table-section {
   margin-top: 40px;
   background: rgba(0, 0, 0, 0.08);
   border-radius: 16px;
@@ -133,32 +133,36 @@ select {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
 }
 
-.os-table-section h2 {
+.cliente-table-section h2 {
   color: #20c997;
   margin-bottom: 18px;
   font-size: 1.2rem;
 }
 
-.os-table {
+.cliente-table {
   width: 100%;
   border-collapse: collapse;
   background: transparent;
 }
 
-.os-table th,
-.os-table td {
+.cliente-table th,
+.cliente-table td {
   padding: 12px 10px;
   text-align: left;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.os-table th {
+.cliente-table th {
   color: #20c997;
   font-weight: 600;
   background: rgba(32, 201, 151, 0.05);
 }
 
-.os-table tbody tr:hover {
+.cliente-table tbody tr {
+  cursor: pointer;
+}
+
+.cliente-table tbody tr:hover {
   background: rgba(32, 201, 151, 0.08);
 }
 
@@ -190,4 +194,17 @@ select {
 
 .btn-excluir:hover {
   background: #a61b1b;
+}
+
+.barra-pesquisa {
+  margin-bottom: 16px;
+
+  input {
+    width: 100%;
+    max-width: 420px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+  }
 }

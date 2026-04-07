@@ -13,33 +13,29 @@ import { ModalRetorno } from '../../../shared/components/modal-retorno/modal-ret
   templateUrl: './cliente-cadastro.html',
   styleUrls: ['./cliente-cadastro.scss'],
 })
-
 export class ClienteCadastro implements OnInit {
-
   modalConfirmacao = false;
   modalRetorno = false;
   carregando = false;
 
-  // Lista e controle de edição
   listaClientes: any[] = [];
   editandoClienteId: number | null = null;
 
-  // Controle do modal de confirmação
+  // pesquisa
+  termoPesquisa = '';
+
   tituloConfirmacao = 'Confirmar Cadastro';
   mensagemConfirmacao = 'Tem a certeza que deseja prosseguir?';
   textoBotaoConfirmar = 'Confirmar';
   textoBotaoCancelar = 'Cancelar';
   acaoConfirmacao: any = () => this.inserirCliente();
 
-  //Variaveis que uso na modal de retorno
-  tituloRetorno: string = '';
-  mensagemRetorno: string = '';
+  tituloRetorno = '';
+  mensagemRetorno = '';
 
-  //Criando novo cliente
   novoCliente: Cliente = {
     nome: '',
     cpf_cnpj: '',
-    //nrtel: '',
     email: '',
     cep: '',
     logradouro: '',
@@ -50,17 +46,28 @@ export class ClienteCadastro implements OnInit {
     tipo_pessoa: 'PF',
   };
 
-  constructor(private supabaseService: SupabaseService) {
-    this.supabaseService = supabaseService;
-  }
+  constructor(private supabaseService: SupabaseService) { }
 
   ngOnInit() {
     this.buscarClientes();
   }
 
-  //ao clicar pra Salvar, chama a modal de confirmação
+  get listaClientesFiltrada() {
+    const termo = this.termoPesquisa.trim().toLowerCase();
+
+    if (!termo) {
+      return this.listaClientes;
+    }
+
+    return this.listaClientes.filter((cliente) => {
+      const nome = (cliente.nome || '').toLowerCase();
+      const cpfCnpj = (cliente.cpf_cnpj || '').toLowerCase();
+
+      return nome.includes(termo) || cpfCnpj.includes(termo);
+    });
+  }
+
   salvarCliente() {
-    // Define ação do modal conforme criação ou edição
     if (this.editandoClienteId) {
       this.tituloConfirmacao = 'Confirmar Alteração';
       this.mensagemConfirmacao = 'Deseja salvar as alterações deste cliente?';
@@ -79,52 +86,41 @@ export class ClienteCadastro implements OnInit {
   }
 
   fecharModalSemSalvar() {
-    // Apenas oculta a modal. 
     this.modalConfirmacao = false;
   }
 
   async inserirCliente() {
-
-    //Oculta modal
     this.modalConfirmacao = false;
+    this.carregando = true;
 
     try {
-      //getClient pegando o Cliente do Supabase
-      //Await p aguardar o retorno da resposta
       const { error } = await this.supabaseService.getClient()
         .from('clientes')
         .insert([this.novoCliente]);
 
       if (error) {
-        //Se der erro atribui as mensagens a modal e chama
-        this.tituloRetorno = 'Falha'
-        this.mensagemRetorno = 'Erro ao cadastrar Cliente ' + error.message;
-        this.modalRetorno = true;
+        this.tituloRetorno = 'Falha';
+        this.mensagemRetorno = 'Erro ao cadastrar cliente: ' + error.message;
       } else {
-        //Se der erro atribui as mensagens a modal e chama
-        this.tituloRetorno = 'Cadastrado'
+        this.tituloRetorno = 'Cadastrado';
         this.mensagemRetorno = 'Cliente cadastrado com sucesso!';
-        this.modalRetorno = true;
-
         this.limparFormulario();
-
-        // Recarrega lista
         await this.buscarClientes();
       }
 
-    } catch (err) {
+      this.modalRetorno = true;
+    } catch {
       this.tituloRetorno = 'Erro de Sistema';
       this.mensagemRetorno = 'Ocorreu um erro inesperado de conexão.';
       this.modalRetorno = true;
-
     } finally {
       this.carregando = false;
     }
   }
 
-  // Busca todos os clientes para listagem
   async buscarClientes() {
     this.carregando = true;
+
     try {
       const { data, error } = await this.supabaseService.getClient()
         .from('clientes')
@@ -135,10 +131,11 @@ export class ClienteCadastro implements OnInit {
         this.tituloRetorno = 'Erro';
         this.mensagemRetorno = 'Erro ao buscar clientes: ' + error.message;
         this.modalRetorno = true;
-      } else if (data) {
-        this.listaClientes = data;
+        return;
       }
-    } catch (err: any) {
+
+      this.listaClientes = data ?? [];
+    } catch {
       this.tituloRetorno = 'Erro de Sistema';
       this.mensagemRetorno = 'Ocorreu um erro inesperado ao buscar clientes.';
       this.modalRetorno = true;
@@ -147,39 +144,50 @@ export class ClienteCadastro implements OnInit {
     }
   }
 
-  // Prepara formulário para edição
   editarCliente(cliente: any) {
-    console.log('editarCliente chamado', cliente);
     this.editandoClienteId = cliente.id;
-    this.novoCliente = { ...cliente } as Cliente;
+    this.novoCliente = {
+      nome: cliente.nome ?? '',
+      cpf_cnpj: cliente.cpf_cnpj ?? '',
+      email: cliente.email ?? '',
+      cep: cliente.cep ?? '',
+      logradouro: cliente.logradouro ?? '',
+      numero: cliente.numero ?? '',
+      bairro: cliente.bairro ?? '',
+      cidade: cliente.cidade ?? '',
+      uf: cliente.uf ?? '',
+      tipo_pessoa: cliente.tipo_pessoa ?? 'PF',
+    };
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async atualizarCliente() {
-    console.log('atualizarCliente chamado, id editando=', this.editandoClienteId, this.novoCliente);
+    if (!this.editandoClienteId) {
+      return;
+    }
+
     this.modalConfirmacao = false;
     this.carregando = true;
-    try {
-      const updateData = { ...this.novoCliente };
-      delete (updateData as any).id;
 
+    try {
       const { error } = await this.supabaseService.getClient()
         .from('clientes')
-        .update(updateData)
+        .update(this.novoCliente)
         .eq('id', this.editandoClienteId);
 
       if (error) {
         this.tituloRetorno = 'Falha';
         this.mensagemRetorno = 'Erro ao atualizar cliente: ' + error.message;
-        this.modalRetorno = true;
       } else {
         this.tituloRetorno = 'Atualizado';
         this.mensagemRetorno = 'Cliente atualizado com sucesso!';
-        this.modalRetorno = true;
         this.limparFormulario();
         await this.buscarClientes();
       }
-    } catch (err) {
+
+      this.modalRetorno = true;
+    } catch {
       this.tituloRetorno = 'Erro de Sistema';
       this.mensagemRetorno = 'Ocorreu um erro inesperado ao atualizar.';
       this.modalRetorno = true;
@@ -188,20 +196,53 @@ export class ClienteCadastro implements OnInit {
     }
   }
 
-  confirmarExclusaoCliente(cliente: any) {
-    console.log('confirmarExclusaoCliente chamado', cliente);
+  async confirmarExclusaoCliente(cliente: any) {
+    const possuiOS = await this.clientePossuiOrdemServico(cliente.id);
+
+    if (possuiOS) {
+      this.tituloRetorno = 'Exclusão não permitida';
+      this.mensagemRetorno =
+        `O cliente ${cliente.nome} não pode ser excluído, pois possui Ordem de Serviço vinculada.`;
+      this.modalRetorno = true;
+      return;
+    }
+
     this.tituloConfirmacao = 'Confirmar Exclusão';
-    this.mensagemConfirmacao = `Deseja realmente excluir o cliente ${cliente.nome}? Esta ação não poderá ser desfeita.`;
+    this.mensagemConfirmacao =
+      `Deseja realmente excluir o cliente ${cliente.nome}? Esta ação não poderá ser desfeita.`;
     this.textoBotaoConfirmar = 'Excluir';
     this.textoBotaoCancelar = 'Cancelar';
     this.acaoConfirmacao = () => this.excluirCliente(cliente.id);
+
     this.modalConfirmacao = true;
   }
 
+  async clientePossuiOrdemServico(clienteId: number): Promise<boolean> {
+    try {
+      // Ajuste o nome da tabela e da coluna conforme seu banco
+      const { data, error } = await this.supabaseService.getClient()
+        .from('ordens_servico')
+        .select('id')
+        .eq('cliente_id', clienteId)
+        .limit(1);
+
+      if (error) {
+        throw error;
+      }
+
+      return !!data && data.length > 0;
+    } catch {
+      this.tituloRetorno = 'Erro';
+      this.mensagemRetorno = 'Não foi possível validar se o cliente possui Ordem de Serviço vinculada.';
+      this.modalRetorno = true;
+      return true; // por segurança, bloqueia exclusão em caso de erro
+    }
+  }
+
   async excluirCliente(id: number) {
-    console.log('excluirCliente chamado id=', id);
     this.modalConfirmacao = false;
     this.carregando = true;
+
     try {
       const { error } = await this.supabaseService.getClient()
         .from('clientes')
@@ -211,14 +252,18 @@ export class ClienteCadastro implements OnInit {
       if (error) {
         this.tituloRetorno = 'Falha';
         this.mensagemRetorno = 'Erro ao excluir cliente: ' + error.message;
-        this.modalRetorno = true;
       } else {
         this.tituloRetorno = 'Excluído';
         this.mensagemRetorno = 'Cliente excluído com sucesso.';
-        this.modalRetorno = true;
         await this.buscarClientes();
+
+        if (this.editandoClienteId === id) {
+          this.limparFormulario();
+        }
       }
-    } catch (err) {
+
+      this.modalRetorno = true;
+    } catch {
       this.tituloRetorno = 'Erro de Sistema';
       this.mensagemRetorno = 'Ocorreu um erro inesperado ao excluir.';
       this.modalRetorno = true;
@@ -227,17 +272,24 @@ export class ClienteCadastro implements OnInit {
     }
   }
 
-  //Quando clica no Ok da modal de retorno.
   fecharModalRetorno() {
     this.modalRetorno = false;
   }
 
-  //Se clicar em cancelar, limpa o formulário
   limparFormulario() {
+    this.editandoClienteId = null;
+
     this.novoCliente = {
-      nome: '', cpf_cnpj: '', email: '', cep: '',
-      logradouro: '', numero: '', bairro: '',
-      cidade: '', uf: '', tipo_pessoa: 'PF'
+      nome: '',
+      cpf_cnpj: '',
+      email: '',
+      cep: '',
+      logradouro: '',
+      numero: '',
+      bairro: '',
+      cidade: '',
+      uf: '',
+      tipo_pessoa: 'PF',
     };
   }
 }
