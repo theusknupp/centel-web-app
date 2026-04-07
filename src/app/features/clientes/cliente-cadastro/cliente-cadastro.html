@@ -14,27 +14,31 @@
             <div class="form-section">
                 <div class="input-full">
                     <label for="">Nome Completo / Razão Social</label>
-                    <input type="text" name="nome" [(ngModel)]="novoCliente.nome" required>
+                    <input type="text" name="nome" [(ngModel)]="novoCliente.nome" required
+                        (input)="nomeInvalido = false" [class.input-invalid]="nomeInvalido">
                 </div>
 
                 <div class="input-half">
                     <label for="">CPF ou CNPJ</label>
-                    <input type="text" name="cpf_cnpj" [(ngModel)]="novoCliente.cpf_cnpj" required>
+                    <input type="text" name="cpf_cnpj" [(ngModel)]="novoCliente.cpf_cnpj" required
+                        (input)="onCpfCnpjInput($event)" (blur)="validarCpfCnpjOnBlur()"
+                        [class.input-invalid]="cpfInvalido">
                 </div>
 
-                <div class="input-half">
+                <!--<div class="input-half">
                     <label for="">Telefone</label>
                     <input type="text" name="nrtel" [(ngModel)]="novoCliente.nrtel" placeholder="(XX) 9XXXX-XXXX" required>
-                </div>
+                </div> -->
 
                 <div class="input-half">
                     <label for="">E-mail</label>
-                    <input type="text" name="email" [(ngModel)]="novoCliente.email" placeholder="exemplo@email.com" required>
+                    <input type="text" name="email" [(ngModel)]="novoCliente.email" placeholder="exemplo@email.com"
+                        required>
                 </div>
 
-                <div class="input-half">
+                <div class="input-full">
                     <label for="">Tipo de Pessoa</label>
-                    <select name = "tipo_pessoa" [(ngModel)]="novoCliente.tipo_pessoa" required>
+                    <select name="tipo_pessoa" [(ngModel)]="novoCliente.tipo_pessoa" required>
                         <option value="PF">Pessoa Física</option>
                         <option value="PJ">Pessoa Jurídica</option>
                     </select>
@@ -72,32 +76,70 @@
                     <input type="text" name="uf" [(ngModel)]="novoCliente.uf" required>
                 </div>
             </div>
-    
+
 
             <div class="form-actions">
-                <button type="button" class="btn-cancelar" onclick="limparFormulario()"> Cancelar </button>
-                <button type="submit" class="btn-salvar"> Finalizar Cadastro</button>
+                <button type="button" class="btn-cancelar" (click)="limparFormulario()"> Cancelar </button>
+                <button type="submit" class="btn-salvar">{{ editandoClienteId ? 'Atualizar Cadastro' : 'Finalizar
+                    Cadastro' }}</button>
             </div>
         </form>
+
+        <!-- Listagem de Clientes Cadastrados -->
+        <section class="cliente-table-section">
+            <h2>Clientes Cadastrados</h2>
+
+            <div class="barra-pesquisa">
+                <input type="text" name="pesquisaCliente" placeholder="Pesquisar por nome ou CPF/CNPJ"
+                    [(ngModel)]="termoPesquisa">
+            </div>
+
+            <table class="cliente-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>CPF / CNPJ</th>
+                        <th>E-mail</th>
+                        <th>Cidade</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let cliente of listaClientesFiltrada" (click)="editarCliente(cliente)">
+                        <td>{{ cliente.id }}</td>
+                        <td>{{ cliente.nome }}</td>
+                        <td>{{ cliente.cpf_cnpj }}</td>
+                        <td>{{ cliente.email }}</td>
+                        <td>{{ cliente.cidade }}</td>
+                        <td>
+                            <button type="button" class="btn-editar"
+                                (click)="editarCliente(cliente); $event.stopPropagation()">
+                                Editar
+                            </button>
+
+                            <button type="button" class="btn-excluir"
+                                (click)="confirmarExclusaoCliente(cliente); $event.stopPropagation()">
+                                Excluir
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr *ngIf="listaClientesFiltrada.length === 0">
+                        <td colspan="6">Nenhum cliente encontrado.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
     </section>
 </main>
-
 <!--Modal de Confirmação-->
-<app-modal-confirmacao 
-  *ngIf="modalConfirmacao"
-  titulo="Confirmar Cadastro"
-  mensagem="Tem a certeza que os dados do cliente foram preenchidos corretamente e deseja prosseguir com o registo?"
-  textoBotaoConfirmar="Confirmar"
-  textoBotaoCancelar="Cancelar"
-  (aoConfirmar)="inserirCliente()"
-  (aoCancelar)="fecharModalSemSalvar()">
+<app-modal-confirmacao *ngIf="modalConfirmacao" [titulo]="tituloConfirmacao" [mensagem]="mensagemConfirmacao"
+    textoBotaoConfirmar="{{ textoBotaoConfirmar }}" textoBotaoCancelar="{{ textoBotaoCancelar }}"
+    (aoConfirmar)="acaoConfirmacao()" (aoCancelar)="fecharModalSemSalvar()">
 </app-modal-confirmacao>
 
 <!--Modal de Retorno-->
-<app-modal-retorno
-  *ngIf="modalRetorno"
-  [titulo]="tituloRetorno"
-  [mensagem]="mensagemRetorno"
-  textoBotaoConfirmar="Entendido"
-  (aoConfirmar)="fecharModalRetorno()">
+<app-modal-retorno *ngIf="modalRetorno" [titulo]="tituloRetorno" [mensagem]="mensagemRetorno"
+    textoBotaoConfirmar="Entendido" (aoConfirmar)="fecharModalRetorno()">
 </app-modal-retorno>

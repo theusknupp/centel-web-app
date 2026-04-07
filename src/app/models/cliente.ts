@@ -2,7 +2,7 @@
 export interface Cliente {
     nome: string;
     cpf_cnpj: string;
-    nrtel: string;
+    //nrtel: string;
     email: string;
     cep: string;
     logradouro: string;

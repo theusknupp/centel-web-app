@@ -6,10 +6,10 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './modal-confirmacao.html',
-  styleUrl: './modal-confirmacao.scss'
+  styleUrls: ['./modal-confirmacao.scss']
 })
 export class ModalConfirmacao {
-  
+
   // AS ENTRADAS (@Input)
   // O que a tela "Pai" vai enviar para escrever nesta Modal.
   // Textos Padrões

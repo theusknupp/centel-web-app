@@ -1,14 +1,16 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-modal-retorno',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './modal-retorno.html',
-  styleUrl: './modal-retorno.scss',
+  styleUrls: ['./modal-retorno.scss'],
 })
 export class ModalRetorno {
 
-  
+
   // AS ENTRADAS (@Input)
   // Textos Padrões
   @Input() titulo: string = 'Aviso';
