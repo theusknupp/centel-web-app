@@ -55,17 +55,21 @@ export class ClienteCadastro implements OnInit {
   }
 
   get listaClientesFiltrada() {
-    const termo = this.termoPesquisa.trim().toLowerCase();
+    const termo = (this.termoPesquisa || '').trim().toLowerCase();
+    if (!termo) return this.listaClientes;
 
-    if (!termo) {
-      return this.listaClientes;
-    }
+    // versão de busca que exige que o nome ou CPF/CNPJ comecem pelo termo informado
+    const termoDigits = termo.replace(/\D/g, '');
 
     return this.listaClientes.filter((cliente) => {
       const nome = (cliente.nome || '').toLowerCase();
       const cpfCnpj = (cliente.cpf_cnpj || '').toLowerCase();
+      const cpfDigits = (cpfCnpj || '').replace(/\D/g, '');
 
-      return nome.includes(termo) || cpfCnpj.includes(termo);
+      const nomeMatch = nome.startsWith(termo);
+      const cpfMatch = termoDigits ? cpfDigits.startsWith(termoDigits) : false;
+
+      return nomeMatch || cpfMatch;
     });
   }
 
