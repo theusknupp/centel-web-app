@@ -77,7 +77,7 @@ export class ClienteCadastro implements OnInit {
     const nome = (this.novoCliente.nome || '').trim();
     const cpf = (this.novoCliente.cpf_cnpj || '').trim();
 
-    // sinaliza campos inválidos visualmente test
+    // sinaliza campos inválidos visualmente
     this.nomeInvalido = !nome;
     // cpf pode vir mascarado, normalize para dígitos ao validar obrigatoriedade
     const cpfDigits = (cpf || '').replace(/\D/g, '');
