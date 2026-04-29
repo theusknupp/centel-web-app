@@ -1,23 +1,3 @@
-
-.glass-nav {
-  /* Coloca o logo na esquerda, menu no centro e avatar na direita */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  /* Espaçamento interno lateral */
-  padding: 0 40px;
-  /* Altura fixa para a barra do topo */
-  height: 80px;
-  
-  /* Efeito Glassmorphism sutil para a barra superior */
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  /* Linha separadora bem fina na parte de baixo da barra */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-}
-
 /* --- ESTILOS DO CABEÇALHO (NAVBAR) --- */
 .glass-nav {
   /* Coloca o logo na esquerda, menu no centro e avatar na direita */
@@ -50,33 +30,34 @@
 }
 
 .nav-links {
-  /* Organiza os itens de menu lado a lado */
   display: flex;
-  /* Tira as bolinhas da lista HTML */
   list-style: none;
-  /* Espaço uniforme entre os botões */
   gap: 32px;
   margin: 0;
   padding: 0;
+  align-items: center; /* Garante que todos os itens fiquem centralizados na altura */
 
+  /* IMPORTANTE: A ponte invisível para o mouse */
+  li {
+    position: relative;
+    /* Adicionamos padding vertical. Isso estica a área de hover até encostar na caixinha do submenu, eliminando a "zona morta" */
+    padding: 10px 0; 
+  }
+
+  /* Estilos para os links principais da Navbar */
   a {
-    /* Tira o sublinhado feio padrão dos links */
     text-decoration: none;
-    /* Branco levemente transparente para os links inativos */
     color: rgba(255, 255, 255, 0.6); 
     font-weight: 500;
     font-size: 0.95rem;
     padding: 8px 0;
-    /* Prepara o link para receber o traço animado embaixo dele */
     position: relative;
     transition: all 0.3s ease;
 
-    /* Ao passar o mouse (hover) ou se for a página ativa, a cor fica branca forte */
     &:hover, &.active {
       color: #ffffff;
     }
 
-    /* Cria um pequeno traço verde abaixo do item que representa a tela atual */
     &.active::after {
       content: '';
       position: absolute;
@@ -87,6 +68,72 @@
       background-color: #20c997;
       border-radius: 2px;
     }
+  }
+
+  /* --- MÁGICA DO SUBMENU DROPDOWN CORRIGIDA --- */
+  .dropdown {
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%; /* Cola perfeitamente no final do padding do 'li' */
+      left: -10px; 
+      /* margin-top: 15px; <-- FOI REMOVIDO DAQUI */
+      
+      background: rgba(11, 61, 46, 0.95); 
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      box-shadow: 0px 8px 24px 0px rgba(0,0,0,0.5);
+      
+      min-width: 180px;
+      z-index: 999;
+      overflow: hidden; 
+      
+      /* Estilos ESPECÍFICOS para os links de DENTRO do submenu */
+      a {
+        color: rgba(255, 255, 255, 0.8);
+        padding: 14px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        
+        /* CORREÇÃO DO VISUAL: Proíbe o texto de quebrar para a linha de baixo! */
+        white-space: nowrap; 
+
+        &::after { display: none; }
+        
+        &:last-child {
+          border-bottom: none; 
+        }
+
+        &:hover {
+          background: rgba(32, 201, 151, 0.15); 
+          color: #20c997; 
+          padding-left: 25px; 
+        }
+        
+        &.active {
+          color: #20c997;
+          font-weight: 600;
+          background: rgba(0, 0, 0, 0.3);
+        }
+      }
+    }
+
+    /* O GATILHO */
+    &:hover .dropdown-content {
+      animation: menuFadeIn 0.3s ease forwards;
+    }
+  }
+}
+
+/* Animação para o submenu não surgir de forma agressiva */
+@keyframes menuFadeIn {
+  0% { 
+    opacity: 0; 
+    transform: translateY(-10px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0); 
   }
 }
 

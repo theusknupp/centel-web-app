@@ -5,7 +5,15 @@
     
     <nav>
       <ul class="nav-links">
-        <li><a routerLink="/emissao-os" rounterLinkActive="active">Ordens de Serviço</a></li>
+        <li class="dropdown">
+          <!--Quando cursor apontar na OS.-->
+          <a style="cursor: pointer;">Ordens de Serviço ▾</a>   
+          <div class="dropdown-content"> <!--Abre as opções Emitir / Listar-->
+           <a routerLink="/emissao-os" routerLinkActive="active">Emitir Nova OS</a>
+           <a routerLink="/lista-os" routerLinkActive="active">Listar Ordens</a>
+          </div>
+        </li>
+        
         <li><a routerLink="/cadastro" rounterLinkActive="active">Clientes</a></li>
         <!-- <li><a routerLink="/cadastro" rounterLinkActive="active">Lista</a></li> -->
         <li><a routerLink="/cadastro" rounterLinkActive="active">Estoque</a></li>

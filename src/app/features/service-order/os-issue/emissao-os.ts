@@ -5,6 +5,8 @@ import { Navbar } from '../../../shared/components/navbar/navbar';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { ModalConfirmacao } from '../../../shared/components/modal-confirmacao/modal-confirmacao';
 import { ModalRetorno } from '../../../shared/components/modal-retorno/modal-retorno';
+import { Validadores } from '../../../utils/validadores';
+
 // Importação dos modelos e enums
 import { OrdemServico } from '../../../models/ordem-servico';
 
@@ -102,10 +104,6 @@ export class EmissaoOs implements OnInit {
 
       if (clienteReq.data) this.listaClientes = clienteReq.data;
       if (servicoReq.data) this.listaTiposServico = servicoReq.data;
-
-      this.listaTiposServico.push({ id: 1, descricao: 'Tipo de Serviço 1' }); // Opção "Outro" para tipos de serviço
-      this.listaTiposServico.push({ id: 2, descricao: 'Tipo de Serviço 2' }); // Opção "Outro" para tipos de serviço
-
       if (tecnicoReq.data) this.listaTecnicos = tecnicoReq.data;
 
       this.listaTecnicos.push({ id: 1, nome: 'Técnico 1' }); // Opção "Outro" para técnicos
@@ -149,8 +147,6 @@ export class EmissaoOs implements OnInit {
   }
 
   // --- OPERAÇÃO DE BANCO DE DADOS ---
-
-
   // CRUD principal
   async buscarOrdensServico() {
     try {

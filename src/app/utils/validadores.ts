@@ -1,0 +1,76 @@
+export class Validadores {
+  
+  // O 'static' permite usar Validadores.apenasDigitos() direto, sem dar 'new'
+  static apenasDigitos(valor: string): string {
+    return (valor || '').replace(/\D/g, '');
+  }
+
+  static isCpfCnpjValido(valor: string): boolean {
+    const digitos = this.apenasDigitos(valor);
+    if (digitos.length === 11) return this.isValidCpf(digitos);
+    if (digitos.length === 14) return this.isValidCnpj(digitos);
+    return false;
+  }
+
+static isValidCpf(cpf: string): boolean {
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+    let soma = 0;
+    for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i), 10) * (10 - i);
+    let resto = 11 - (soma % 11);
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(9), 10)) return false;
+
+    soma = 0;
+    for (let i = 0; i < 10; i++) soma += parseInt(cpf.charAt(i), 10) * (11 - i);
+    resto = 11 - (soma % 11);
+    if (resto === 10 || resto === 11) resto = 0;
+    return resto === parseInt(cpf.charAt(10), 10);
+  }
+
+  static isValidCnpj(cnpj: string): boolean {
+    if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
+
+    const calcular = (base: string, pesos: number[]) => {
+      let soma = 0;
+      for (let i = 0; i < pesos.length; i++) {
+        soma += parseInt(base.charAt(i), 10) * pesos[i];
+      }
+      const resto = soma % 11;
+      return resto < 2 ? 0 : 11 - resto;
+    };
+
+    const d1 = calcular(cnpj, [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+    if (d1 !== parseInt(cnpj.charAt(12), 10)) return false;
+
+    const d2 = calcular(cnpj, [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+    return d2 === parseInt(cnpj.charAt(13), 10);
+  }
+
+  static formatarCpfCnpj(valor: string): string {
+    const digits = this.apenasDigitos(valor).slice(0, 14);
+    if (digits.length <= 11) {
+      return this.formatCpf(digits);
+    }
+    return this.formatCnpj(digits);
+  }
+
+  static formatCpf(digits: string): string {
+    const d = digits.padEnd(11, '');
+    let out = d.substring(0, 3);
+    if (digits.length > 3) out += '.' + d.substring(3, 6);
+    if (digits.length > 6) out += '.' + d.substring(6, 9);
+    if (digits.length > 9) out += '-' + d.substring(9, 11);
+    return out.slice(0, 14);
+  }
+
+  static formatCnpj(digits: string): string {
+    const d = digits.padEnd(14, '');
+    let out = d.substring(0, 2);
+    if (digits.length > 2) out += '.' + d.substring(2, 5);
+    if (digits.length > 5) out += '.' + d.substring(5, 8);
+    if (digits.length > 8) out += '/' + d.substring(8, 12);
+    if (digits.length > 12) out += '-' + d.substring(12, 14);
+    return out.slice(0, 18);
+  }
+}

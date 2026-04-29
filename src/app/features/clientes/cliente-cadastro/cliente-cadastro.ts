@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ModalConfirmacao } from '../../../shared/components/modal-confirmacao/modal-confirmacao';
 import { ModalRetorno } from '../../../shared/components/modal-retorno/modal-retorno';
+import { Validadores } from '../../../utils/validadores';
 
 @Component({
   selector: 'app-cliente-cadastro',
@@ -38,6 +39,7 @@ export class ClienteCadastro implements OnInit {
   novoCliente: Cliente = {
     nome: '',
     cpf_cnpj: '',
+    nrtel: '',
     email: '',
     cep: '',
     logradouro: '',
@@ -91,16 +93,19 @@ export class ClienteCadastro implements OnInit {
         this.tituloRetorno = 'Campo obrigatório';
         this.mensagemRetorno = `Não é possível ${acao} um cliente sem CPF/CNPJ.`;
       }
-
       this.modalRetorno = true;
       return;
     }
 
-    // valida CPF/CNPJ
-    if (!this.isCpfCnpjValido(cpf)) {
+    // valida CPF/CNPJ - chama utils de validação
+    if (!Validadores.isCpfCnpjValido(cpf)) {
+
+      //Pega o tamanho do cpf.
       const digitos = (cpf || '').replace(/\D/g, '').length;
+      //Define se é CPF ou CNPJ pela quantidade de digitos.
       const tipo = digitos === 11 ? 'CPF' : digitos === 14 ? 'CNPJ' : 'CPF/CNPJ';
       const acao = this.editandoClienteId ? 'salvar' : 'criar';
+      
       this.tituloRetorno = 'Valor inválido';
       this.mensagemRetorno = `Não é possível ${acao} um cliente com ${tipo} inválido.`;
       this.modalRetorno = true;
@@ -127,13 +132,13 @@ export class ClienteCadastro implements OnInit {
   onCpfCnpjInput(event: Event) {
     const input = event.target as HTMLInputElement;
     let raw = input.value || '';
-    const digits = this.apenasDigitos(raw).slice(0, 14); // limitar a 14 dígitos
+    const digits = Validadores.apenasDigitos(raw).slice(0, 14); // limitar a 14 dígitos
 
     let masked = raw;
     if (digits.length <= 11) {
-      masked = this.formatCpf(digits);
+      masked = Validadores.formatCpf(digits);
     } else {
-      masked = this.formatCnpj(digits);
+      masked = Validadores.formatCnpj(digits);
     }
 
     input.value = masked;
@@ -141,18 +146,18 @@ export class ClienteCadastro implements OnInit {
 
     // definir estado visual de invalidez: se número incompleto ou inválido
     if (digits.length === 11) {
-      this.cpfInvalido = !this.isValidCpf(digits);
+      this.cpfInvalido = Validadores.isValidCpf(digits);
     } else if (digits.length === 14) {
-      this.cpfInvalido = !this.isValidCnpj(digits);
+      this.cpfInvalido = Validadores.isValidCnpj(digits);
     } else {
       this.cpfInvalido = digits.length > 0; // incompleto -> sinalizar
     }
   }
 
   validarCpfCnpjOnBlur() {
-    const digits = this.apenasDigitos(this.novoCliente.cpf_cnpj || '');
-    if (digits.length === 11) this.cpfInvalido = !this.isValidCpf(digits);
-    else if (digits.length === 14) this.cpfInvalido = !this.isValidCnpj(digits);
+    const digits = Validadores.apenasDigitos(this.novoCliente.cpf_cnpj || '');
+    if (digits.length === 11) this.cpfInvalido = !Validadores.isValidCpf(digits);
+    else if (digits.length === 14) this.cpfInvalido = !Validadores.isValidCnpj(digits);
     else this.cpfInvalido = digits.length > 0;
   }
 
@@ -198,6 +203,11 @@ export class ClienteCadastro implements OnInit {
         .select('*')
         .order('id', { ascending: false });
 
+        console.log('' + this.supabaseService.getClient);
+        console.log('Teste')
+
+        console.log('Quantidade de clientes encontrados:', data?.length);
+
       if (error) {
         this.tituloRetorno = 'Erro';
         this.mensagemRetorno = 'Erro ao buscar clientes: ' + error.message;
@@ -221,6 +231,7 @@ export class ClienteCadastro implements OnInit {
       nome: cliente.nome ?? '',
       cpf_cnpj: cliente.cpf_cnpj ?? '',
       email: cliente.email ?? '',
+      nrtel: cliente.nrtel ?? '',
       cep: cliente.cep ?? '',
       logradouro: cliente.logradouro ?? '',
       numero: cliente.numero ?? '',
@@ -293,7 +304,6 @@ export class ClienteCadastro implements OnInit {
 
   async clientePossuiOrdemServico(clienteId: number): Promise<boolean> {
     try {
-      // Ajuste o nome da tabela e da coluna conforme seu banco
       const { data, error } = await this.supabaseService.getClient()
         .from('ordens_servico')
         .select('id')
@@ -357,6 +367,7 @@ export class ClienteCadastro implements OnInit {
       nome: '',
       cpf_cnpj: '',
       email: '',
+      nrtel: '',
       cep: '',
       logradouro: '',
       numero: '',
@@ -367,89 +378,5 @@ export class ClienteCadastro implements OnInit {
     };
     this.nomeInvalido = false;
     this.cpfInvalido = false;
-  }
-
-  private apenasDigitos(valor: string) {
-    return (valor || '').replace(/\D/g, '');
-  }
-
-  private isValidCpf(cpf: string): boolean {
-    cpf = this.apenasDigitos(cpf);
-    if (cpf.length !== 11) return false;
-    if (/^(\d)\1{10}$/.test(cpf)) return false;
-
-    let soma = 0;
-    for (let i = 0; i < 9; i++) {
-      soma += parseInt(cpf.charAt(i), 10) * (10 - i);
-    }
-    let resto = 11 - (soma % 11);
-    if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(cpf.charAt(9), 10)) return false;
-
-    soma = 0;
-    for (let i = 0; i < 10; i++) {
-      soma += parseInt(cpf.charAt(i), 10) * (11 - i);
-    }
-    resto = 11 - (soma % 11);
-    if (resto === 10 || resto === 11) resto = 0;
-    return resto === parseInt(cpf.charAt(10), 10);
-  }
-
-  private isValidCnpj(cnpj: string): boolean {
-    cnpj = this.apenasDigitos(cnpj);
-    if (cnpj.length !== 14) return false;
-    if (/^(\d)\1{13}$/.test(cnpj)) return false;
-
-    const calcular = (base: string, pesos: number[]) => {
-      let soma = 0;
-      for (let i = 0; i < pesos.length; i++) {
-        soma += parseInt(base.charAt(i), 10) * pesos[i];
-      }
-      const resto = soma % 11;
-      return resto < 2 ? 0 : 11 - resto;
-    };
-
-    const pesos1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-    const d1 = calcular(cnpj, pesos1);
-    if (d1 !== parseInt(cnpj.charAt(12), 10)) return false;
-
-    const pesos2 = [6].concat(pesos1) as number[];
-    const d2 = calcular(cnpj, pesos2);
-    return d2 === parseInt(cnpj.charAt(13), 10);
-  }
-
-  public isCpfCnpjValido(valor: string): boolean {
-    const digitos = this.apenasDigitos(valor);
-    if (digitos.length === 11) return this.isValidCpf(digitos);
-    if (digitos.length === 14) return this.isValidCnpj(digitos);
-    return false;
-  }
-
-  private formatCpf(digits: string) {
-    const d = (digits || '').padEnd(11, '');
-    const part1 = d.substring(0, 3);
-    const part2 = d.substring(3, 6);
-    const part3 = d.substring(6, 9);
-    const part4 = d.substring(9, 11);
-    let out = part1;
-    if (digits.length > 3) out += '.' + part2;
-    if (digits.length > 6) out += '.' + part3;
-    if (digits.length > 9) out += '-' + part4;
-    return out.slice(0, 14);
-  }
-
-  private formatCnpj(digits: string) {
-    const d = (digits || '').padEnd(14, '');
-    const p1 = d.substring(0, 2);
-    const p2 = d.substring(2, 5);
-    const p3 = d.substring(5, 8);
-    const p4 = d.substring(8, 12);
-    const p5 = d.substring(12, 14);
-    let out = p1;
-    if (digits.length > 2) out += '.' + p2;
-    if (digits.length > 5) out += '.' + p3;
-    if (digits.length > 8) out += '/' + p4;
-    if (digits.length > 12) out += '-' + p5;
-    return out.slice(0, 18);
   }
 }
