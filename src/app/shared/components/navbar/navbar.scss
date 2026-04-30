@@ -1,4 +1,4 @@
-/* --- ESTILOS DO CABEÇALHO (NAVBAR) --- */
+
 .glass-nav {
   /* Coloca o logo na esquerda, menu no centro e avatar na direita */
   display: flex;
@@ -8,7 +8,10 @@
   padding: 0 40px;
   /* Altura fixa para a barra do topo */
   height: 80px;
-  
+
+  position: relative; 
+  z-index: 1000;
+
   /* Efeito Glassmorphism sutil para a barra superior */
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(20px);
@@ -35,13 +38,17 @@
   gap: 32px;
   margin: 0;
   padding: 0;
-  align-items: center; /* Garante que todos os itens fiquem centralizados na altura */
+  
+  /* A MÁGICA 1: Faz a lista ocupar 100% da altura da Navbar (80px) */
+  height: 100%; 
 
-  /* IMPORTANTE: A ponte invisível para o mouse */
+  /* A MÁGICA 2: A Ponte Invisível */
   li {
     position: relative;
-    /* Adicionamos padding vertical. Isso estica a área de hover até encostar na caixinha do submenu, eliminando a "zona morta" */
-    padding: 10px 0; 
+    /* Faz o item (o "botão") ter 80px de altura também */
+    height: 100%; 
+    display: flex;
+    align-items: center; /* Mantém o texto centralizado verticalmente */
   }
 
   /* Estilos para os links principais da Navbar */
@@ -49,7 +56,7 @@
     text-decoration: none;
     color: rgba(255, 255, 255, 0.6); 
     font-weight: 500;
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     padding: 8px 0;
     position: relative;
     transition: all 0.3s ease;
@@ -70,14 +77,13 @@
     }
   }
 
-  /* --- MÁGICA DO SUBMENU DROPDOWN CORRIGIDA --- */
-  .dropdown {
+  /* --- O SUBMENU DROPDOWN --- */
+ .dropdown {
     .dropdown-content {
-      display: none;
+      display: none; /* Escondido por padrão */
       position: absolute;
-      top: 100%; /* Cola perfeitamente no final do padding do 'li' */
-      left: -10px; 
-      /* margin-top: 15px; <-- FOI REMOVIDO DAQUI */
+      top: 100%; 
+      left: -20px; /* Ajuste leve para compensar o novo tamanho da caixa */
       
       background: rgba(11, 61, 46, 0.95); 
       backdrop-filter: blur(10px);
@@ -85,20 +91,27 @@
       border-radius: 8px;
       box-shadow: 0px 8px 24px 0px rgba(0,0,0,0.5);
       
-      min-width: 180px;
-      z-index: 999;
-      overflow: hidden; 
+      /* 1. AUMENTAMOS O TAMANHO DA CAIXA AQUI (de 180px para 240px) */
+      min-width: 240px; 
+      z-index: 9999;
+      overflow: visible; 
       
-      /* Estilos ESPECÍFICOS para os links de DENTRO do submenu */
       a {
         color: rgba(255, 255, 255, 0.8);
-        padding: 14px 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         
-        /* CORREÇÃO DO VISUAL: Proíbe o texto de quebrar para a linha de baixo! */
+        /* 2. AUMENTAMOS A ÁREA DE CLIQUE E A FONTE */
+        padding: 16px 24px; 
+        font-size: 1rem;
+        
+        /* 3. GARANTE QUE CADA LINK OCUPE A LARGURA INTEIRA DA CAIXA */
+        width: 100%;
+        display: block;
+        box-sizing: border-box; /* Impede que o padding quebre o tamanho */
+        
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         white-space: nowrap; 
 
-        &::after { display: none; }
+        &::after { display: none; } 
         
         &:last-child {
           border-bottom: none; 
@@ -107,7 +120,7 @@
         &:hover {
           background: rgba(32, 201, 151, 0.15); 
           color: #20c997; 
-          padding-left: 25px; 
+          padding-left: 32px; /* Efeito tátil um pouco maior para acompanhar o novo tamanho */
         }
         
         &.active {
@@ -118,8 +131,10 @@
       }
     }
 
-    /* O GATILHO */
+    /* 4. O GATILHO CORRIGIDO: Força o modo 'Coluna' (um embaixo do outro) */
     &:hover .dropdown-content {
+      display: flex;
+      flex-direction: column; /* A mágica que empilha os itens verticalmente */
       animation: menuFadeIn 0.3s ease forwards;
     }
   }

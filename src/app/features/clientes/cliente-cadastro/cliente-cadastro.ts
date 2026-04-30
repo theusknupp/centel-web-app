@@ -56,7 +56,7 @@ export class ClienteCadastro implements OnInit {
     this.buscarClientes();
   }
 
-  get listaClientesFiltrada() {
+ get listaClientesFiltrada() {
     const termo = (this.termoPesquisa || '').trim().toLowerCase();
     if (!termo) return this.listaClientes;
 
@@ -74,6 +74,7 @@ export class ClienteCadastro implements OnInit {
       return nomeMatch || cpfMatch;
     });
   }
+
 
   salvarCliente() {
     const nome = (this.novoCliente.nome || '').trim();
@@ -206,12 +207,6 @@ export class ClienteCadastro implements OnInit {
         .from('clientes')
         .select('*')
         .order('id', { ascending: false });
-
-        console.log('' + this.supabaseService.getClient);
-        console.log('Teste')
-
-        console.log('Quantidade de clientes encontrados:', data?.length);
-
       if (error) {
         this.tituloRetorno = 'Erro';
         this.mensagemRetorno = 'Erro ao buscar clientes: ' + error.message;

@@ -1,0 +1,64 @@
+<app-navbar></app-navbar>
+
+<main class="container-cadastro">
+  <section class="glass-card-grande">
+    
+    <header style="margin-bottom: 20px;">
+      <h1>Lista de Ordens de Serviço</h1>
+      <p>Consulte, edite ou remova as ordens de serviço do sistema.</p>
+    </header>
+
+    <div *ngIf="carregando" class="loading-msg">Carregando ordens de serviço...</div>
+
+    <section *ngIf="!carregando" class="os-table-section">
+      <table class="os-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Equipamento</th>
+            <th>Status</th>
+            <th>Valor (R$)</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="listaOrdensServico.length === 0">
+            <td colspan="6" style="text-align: center; padding: 20px;">Nenhuma Ordem de Serviço encontrada.</td>
+          </tr>
+          
+          <tr *ngFor="let os of listaOrdensServico">
+            <td>{{ os.id }}</td>
+            <td>{{ os.cliente_nome }}</td>
+            <td>{{ os.equipamento }}</td>
+            <td>{{ os.status_servico }}</td>
+            <td>{{ os.valor_total | number:'1.2-2' }}</td>
+            <td>
+              <button class="btn-editar" (click)="editarOrdemServico(os)">Editar</button>
+              <button class="btn-excluir" (click)="confirmarExclusao(os)">Excluir</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </section>
+</main>
+
+<app-modal-confirmacao 
+  *ngIf="modalConfirmacao"
+  [titulo]="tituloConfirmacao"
+  [mensagem]="mensagemConfirmacao"
+  textoBotaoConfirmar="{{ textoBotaoConfirmar }}"
+  textoBotaoCancelar="{{ textoBotaoCancelar }}"
+  (aoConfirmar)="acaoConfirmacao()"
+  (aoCancelar)="fecharModalSemSalvar()">
+</app-modal-confirmacao>
+
+<app-modal-retorno
+  *ngIf="modalRetorno"
+  [titulo]="tituloRetorno"
+  [mensagem]="mensagemRetorno"
+  textoBotaoConfirmar="Entendido"
+  (aoConfirmar)="fecharModalRetorno()">
+</app-modal-retorno>

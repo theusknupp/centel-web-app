@@ -90,7 +90,11 @@ export class EmissaoOs implements OnInit {
 
   ngOnInit() {
     this.carregarDadosEssenciais().then(() => {
-      this.buscarOrdensServico();
+     const osRecebida = history.state.osSelecionada;
+      if (osRecebida) {
+        this.editandoOsId = osRecebida.id;
+        this.novaOs = { ...osRecebida };
+      }
     });
   }
 
@@ -119,7 +123,6 @@ export class EmissaoOs implements OnInit {
 
 
   // --- CONTROLE DAS MODAIS ---
-
   salvarOs() {
     // Define ação e textos do modal de acordo com edição ou criação
     if (this.editandoOsId) {
@@ -146,38 +149,6 @@ export class EmissaoOs implements OnInit {
     this.modalRetorno = false;
   }
 
-  // --- OPERAÇÃO DE BANCO DE DADOS ---
-  // CRUD principal
-  async buscarOrdensServico() {
-    try {
-      const { data, error } = await this.supabaseService.getClient()
-        .from('ordens_servico')
-        .select('*')
-        .order('id', { ascending: false });
-      if (error) throw error;
-      // Adicionar nome do cliente à lista de OSs
-      this.listaOrdensServico = (data || []).map((os: any) => {
-        // Buscar nome do cliente na listaClientes
-        const cliente = this.listaClientes.find(c => c.id === os.cliente_id);
-        os.cliente_nome = cliente ? cliente.nome : os.cliente_id;
-        // Formatar data_conclusao de UTC para horário local no formato yyyy-MM-ddThh:mm
-        if (os.data_conclusao) {
-          const date = new Date(os.data_conclusao);
-          const year = date.getFullYear();
-          const month = String(date.getMonth() + 1).padStart(2, '0');
-          const day = String(date.getDate()).padStart(2, '0');
-          const hours = String(date.getHours()).padStart(2, '0');
-          const minutes = String(date.getMinutes()).padStart(2, '0');
-          os.data_conclusao = `${year}-${month}-${day}T${hours}:${minutes}`;
-        }
-        return os;
-      });
-    } catch (err: any) {
-      this.tituloRetorno = 'Erro!';
-      this.mensagemRetorno = 'Erro ao buscar ordens de serviço: ' + err.message;
-      this.modalRetorno = true;
-    }
-  }
 
   async inserirOrdemServico() {
     this.modalConfirmacao = false;
@@ -209,7 +180,6 @@ export class EmissaoOs implements OnInit {
         this.mensagemRetorno = 'Ordem de Serviço gerada e registrada no sistema.';
         this.modalRetorno = true;
         this.limparFormulario();
-        this.buscarOrdensServico();
       }
     } catch (err) {
       this.tituloRetorno = 'Erro de Conexão';
@@ -250,49 +220,7 @@ export class EmissaoOs implements OnInit {
         this.mensagemRetorno = 'Ordem de Serviço atualizada com sucesso.';
         this.modalRetorno = true;
         this.limparFormulario();
-        this.buscarOrdensServico();
         this.editandoOsId = null;
-      }
-    } catch (err) {
-      this.tituloRetorno = 'Erro de Conexão';
-      this.mensagemRetorno = 'Falha crítica ao tentar contatar o servidor.';
-      this.modalRetorno = true;
-    } finally {
-      this.carregando = false;
-    }
-  }
-
-  confirmarExclusao(os: any) {
-    this.tituloConfirmacao = 'Confirmar Exclusão';
-    this.mensagemConfirmacao = `Deseja realmente excluir a OS #${os.id}? Esta ação não poderá ser desfeita.`;
-    this.textoBotaoConfirmar = 'Excluir';
-    this.textoBotaoCancelar = 'Cancelar';
-    this.acaoConfirmacao = () => this.excluirOrdemServico(os.id);
-    this.modalConfirmacao = true;
-  }
-
-  async excluirOrdemServico(id: number) {
-    console.log("Excluindo OS #" + id);
-    this.modalConfirmacao = false;
-    this.carregando = true;
-    try {
-      const { error } = await this.supabaseService.getClient()
-        .from('ordens_servico')
-        .delete()
-        .eq('id', id);
-
-      console.log("----------------");
-      console.log(error);
-      if (error) {
-        this.tituloRetorno = 'Erro ao excluir';
-        this.mensagemRetorno = 'Motivo: ' + error.message;
-        this.modalRetorno = true;
-      } else {
-        this.tituloRetorno = 'Excluído!';
-        this.mensagemRetorno = 'Ordem de Serviço excluída com sucesso.';
-        this.modalRetorno = true;
-        this.buscarOrdensServico();
-        if (this.editandoOsId === id) this.limparFormulario();
       }
     } catch (err) {
       this.tituloRetorno = 'Erro de Conexão';

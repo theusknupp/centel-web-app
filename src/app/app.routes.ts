@@ -6,6 +6,7 @@ import { Login } from './features/auth/login/login';
 import { Dashboard } from './features/home/dashboard/dashboard';
 import { ClienteCadastro } from './features/clientes/cliente-cadastro/cliente-cadastro';
 import { EmissaoOs } from './features/service-order/os-issue/emissao-os';
+import { ListaOsComponent } from './features/service-order/lista-os/lista-os';
 
 
 export const routes: Routes = [
@@ -23,5 +24,7 @@ export const routes: Routes = [
 
   // 5. ROTA DA EMISSÃO DE OS
   { path: 'emissao-os', component: EmissaoOs},
+
+  { path: 'lista-os', component: ListaOsComponent },
 
 ];

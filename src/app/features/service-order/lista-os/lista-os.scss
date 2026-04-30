@@ -1,0 +1,55 @@
+/* Fonte oficial do projeto */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:host {
+  font-family: 'Inter', sans-serif;
+  display: block;
+  min-height: 100vh;
+  /* Fundo verde profundo corporativo */
+  background: linear-gradient(135deg, #0b3d2e 0%, #1e7d62 100%);
+  color: #fff;
+}
+
+.container-cadastro {
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Painel de vidro (Glassmorphism) alargado para comportar uma OS completa */
+.glass-card-grande {
+  width: 100%;
+  max-width: 1100px; 
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border-radius: 24px;
+  padding: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  
+  header {
+    margin-bottom: 30px;
+    h1 { color: #20c997; margin: 0; }
+    p { opacity: 0.7; font-size: 0.9rem; margin-top: 5px; }
+  }
+}
+
+/* Mensagem centralizada enquanto o Supabase responde */
+.loading-msg {
+  text-align: center;
+  color: #20c997;
+  font-size: 1.2rem;
+  padding: 40px;
+}
+
+
+/* Badge (Pílula) para destacar o status na tabela */
+.status-badge {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
