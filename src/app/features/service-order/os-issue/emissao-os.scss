@@ -214,3 +214,52 @@ select option {
   font-size: 1.2rem;
   padding: 40px;
 }
+
+/* Para telas de Tablet (até 992px) */
+@media (max-width: 992px) {
+  .glass-card-grande {
+    padding: 30px 20px; /* Reduz o respiro interno do cartão */
+  }
+
+  /* Reduzimos de 4 colunas para 2 colunas */
+  .form-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Reajustando as classes utilitárias para a nova malha de 2 colunas */
+  .input-full { grid-column: span 2; } 
+  .input-half { grid-column: span 2; } /* O que era metade agora ocupa a linha inteira do tablet */
+  .input-quarter { grid-column: span 1; } /* O que era 1/4 agora ocupa metade da tela */
+}
+
+/* Para telas de Celular (até 600px) */
+@media (max-width: 600px) {
+  .container-cadastro {
+    padding: 15px 10px; /* Quase gruda nas bordas da tela */
+  }
+
+  .glass-card-grande {
+    padding: 20px 15px;
+    border-radius: 16px;
+  }
+
+  /* Reduzimos para 1 ÚNICA coluna (tudo empilhado) */
+  .form-section {
+    grid-template-columns: 1fr;
+  }
+
+  /* Todas as classes utilitárias agora ocupam 100% da linha */
+  .input-full, .input-half, .input-quarter { 
+    grid-column: span 1; 
+  }
+
+  /* Ajuste dos botões no celular */
+  .form-actions {
+    flex-direction: column-reverse; /* O botão de Salvar fica em cima, o de cancelar embaixo */
+    gap: 15px;
+    
+    button {
+      width: 100%; /* Botões gigantes para facilitar o clique no touch */
+    }
+  }
+}

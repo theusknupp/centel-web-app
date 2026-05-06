@@ -3,26 +3,29 @@
       <span class="logo-highlight">CEN</span>TEL
     </div>
     
-    <nav>
-      <ul class="nav-links">
-        <li class="dropdown">
-          <!--Quando cursor apontar na OS.-->
-          <a style="cursor: pointer;">Ordens de Serviço ▾</a>   
-          <div class="dropdown-content"> <!--Abre as opções Emitir / Listar-->
-           <a routerLink="/emissao-os" routerLinkActive="active">Emitir Nova OS</a>
-           <a routerLink="/lista-os" routerLinkActive="active">Listar Ordens</a>
-          </div>
-        </li>
-        
-        <li><a routerLink="/cadastro" routerLinkActive="active">Clientes</a></li>
-        <!-- <li><a routerLink="/cadastro" rounterLinkActive="active">Lista</a></li> -->
-        <li><a routerLink="/cadastro" routerLinkActive="active">Estoque</a></li>
-        <li><a routerLink="/cadastro" routerLinkActive="active">Relatório</a></li>
-        <!-- <li><a routerLink="/cadastro" rounterLinkActive="active">Vendas</a></li> -->
-      </ul>
-    </nav>
-    
-    <div class="user-profile">
-      <div class="avatar"></div>
-    </div>
-  </header>
+    <button class="menu-toggle" (click)="toggleMenu()">
+      <span *ngIf="!menuAberto">☰</span>
+      <span *ngIf="menuAberto">✕</span>
+    </button>
+
+ <nav [class.aberto]="menuAberto">
+    <ul class="nav-links">
+      
+      <li class="dropdown" routerLinkActive="active">
+        <a style="cursor: pointer;">Ordens de Serviço ▾</a>   
+        <div class="dropdown-content"> 
+         <a routerLink="/emissao-os" routerLinkActive="active" (click)="fecharMenu()">Emitir Nova OS</a>
+         <a routerLink="/lista-os" routerLinkActive="active" (click)="fecharMenu()">Listar Ordens</a>
+        </div>
+      </li>
+      
+      <li><a routerLink="/cadastro" routerLinkActive="active" (click)="fecharMenu()">Clientes</a></li>
+      <li><a routerLink="/estoque" routerLinkActive="active" (click)="fecharMenu()">Estoque</a></li>
+      <li><a routerLink="/relatorio" routerLinkActive="active" (click)="fecharMenu()">Relatório</a></li>
+    </ul>
+  </nav>
+  
+  <div class="user-profile">
+    <div class="avatar"></div>
+  </div>
+</header>

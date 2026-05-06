@@ -73,4 +73,24 @@ static isValidCpf(cpf: string): boolean {
     if (digits.length > 12) out += '-' + d.substring(12, 14);
     return out.slice(0, 18);
   }
+
+  static isDataMaiorIgualHoje(dataStr: string): boolean {
+    if (!dataStr) return true; // Se o campo for vazio
+    
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0); // Zera as horas para comparar apenas os dias
+    
+    // Concatena T00:00:00 para forçar o fuso horário local e evitar bug de diferença de horas do UTC
+    const dataInput = new Date(dataStr + 'T00:00:00'); 
+    
+    return dataInput >= hoje;
+  }
+
+  /**
+   * Remove todos os caracteres numéricos (0-9) de uma string.
+   */
+  static removerNumeros(valor: string): string {
+    return (valor || '').replace(/[0-9]/g, '');
+  }
+
 }

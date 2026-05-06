@@ -1,22 +1,17 @@
-
+/* --- ESTILOS GERAIS DA NAVBAR (DESKTOP) --- */
 .glass-nav {
-  /* Coloca o logo na esquerda, menu no centro e avatar na direita */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* Espaçamento interno lateral */
   padding: 0 40px;
-  /* Altura fixa para a barra do topo */
   height: 80px;
 
   position: relative; 
   z-index: 1000;
 
-  /* Efeito Glassmorphism sutil para a barra superior */
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  /* Linha separadora bem fina na parte de baixo da barra */
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
@@ -26,7 +21,6 @@
   font-weight: 700;
   letter-spacing: 1px;
   
-  /* A sílaba 'CEN' fica com o verde de destaque do sistema */
   .logo-highlight {
     color: #20c997; 
   }
@@ -38,20 +32,15 @@
   gap: 32px;
   margin: 0;
   padding: 0;
-  
-  /* A MÁGICA 1: Faz a lista ocupar 100% da altura da Navbar (80px) */
   height: 100%; 
 
-  /* A MÁGICA 2: A Ponte Invisível */
   li {
     position: relative;
-    /* Faz o item (o "botão") ter 80px de altura também */
     height: 100%; 
     display: flex;
-    align-items: center; /* Mantém o texto centralizado verticalmente */
+    align-items: center; 
   }
 
-  /* Estilos para os links principais da Navbar */
   a {
     text-decoration: none;
     color: rgba(255, 255, 255, 0.6); 
@@ -64,26 +53,28 @@
     &:hover, &.active {
       color: #ffffff;
     }
-
-    &.active::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: #20c997;
-      border-radius: 2px;
-    }
   }
 
-  /* --- O SUBMENU DROPDOWN --- */
- .dropdown {
+  /* Linha Verde Ativa */
+  a.active::after, 
+  li.active > a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #20c997;
+    border-radius: 2px;
+  }
+
+  /* --- O SUBMENU DROPDOWN (DESKTOP) --- */
+  .dropdown {
     .dropdown-content {
-      display: none; /* Escondido por padrão */
+      display: none; 
       position: absolute;
       top: 100%; 
-      left: -20px; /* Ajuste leve para compensar o novo tamanho da caixa */
+      left: -20px; 
       
       background: rgba(11, 61, 46, 0.95); 
       backdrop-filter: blur(10px);
@@ -91,23 +82,17 @@
       border-radius: 8px;
       box-shadow: 0px 8px 24px 0px rgba(0,0,0,0.5);
       
-      /* 1. AUMENTAMOS O TAMANHO DA CAIXA AQUI (de 180px para 240px) */
       min-width: 240px; 
       z-index: 9999;
       overflow: visible; 
       
       a {
         color: rgba(255, 255, 255, 0.8);
-        
-        /* 2. AUMENTAMOS A ÁREA DE CLIQUE E A FONTE */
         padding: 16px 24px; 
         font-size: 1rem;
-        
-        /* 3. GARANTE QUE CADA LINK OCUPE A LARGURA INTEIRA DA CAIXA */
         width: 100%;
         display: block;
-        box-sizing: border-box; /* Impede que o padding quebre o tamanho */
-        
+        box-sizing: border-box; 
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         white-space: nowrap; 
 
@@ -120,7 +105,7 @@
         &:hover {
           background: rgba(32, 201, 151, 0.15); 
           color: #20c997; 
-          padding-left: 32px; /* Efeito tátil um pouco maior para acompanhar o novo tamanho */
+          padding-left: 32px; 
         }
         
         &.active {
@@ -131,32 +116,144 @@
       }
     }
 
-    /* 4. O GATILHO CORRIGIDO: Força o modo 'Coluna' (um embaixo do outro) */
     &:hover .dropdown-content {
       display: flex;
-      flex-direction: column; /* A mágica que empilha os itens verticalmente */
+      flex-direction: column;
       animation: menuFadeIn 0.3s ease forwards;
     }
   }
 }
 
-/* Animação para o submenu não surgir de forma agressiva */
 @keyframes menuFadeIn {
-  0% { 
-    opacity: 0; 
-    transform: translateY(-10px); 
-  }
-  100% { 
-    opacity: 1; 
-    transform: translateY(0); 
-  }
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Bolinha provisória que simula a foto do usuário */
 .user-profile .avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   background: linear-gradient(135deg, #20c997, #128c7e);
   cursor: pointer;
+}
+
+/* Oculta botão no Desktop */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #20c997;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+/* =========================================
+   RESPONSIVIDADE (TABLET)
+   ========================================= */
+@media (max-width: 992px) {
+  .glass-nav {
+    padding: 0 20px;
+  }
+  
+  .nav-links {
+    gap: 15px; 
+    
+    a {
+      font-size: 0.95rem; 
+    }
+  }
+}
+
+/* =========================================
+   RESPONSIVIDADE (CELULAR / MOBILE)
+   ========================================= */
+@media (max-width: 768px) {
+  .glass-nav {
+    flex-wrap: wrap; 
+    height: auto;
+    padding: 15px 20px;
+  }
+
+  .user-profile {
+    display: none; 
+  }
+
+  .menu-toggle {
+    display: block;
+    margin-left: auto; 
+  }
+
+  /* Oculta o menu inteiro por padrão no mobile */
+  nav {
+    width: 100%;
+    display: none; 
+    margin-top: 15px;
+
+    /* Acende quando clica no botão hambúrguer */
+    &.aberto {
+      display: block;
+      animation: menuDeslizar 0.3s ease forwards;
+    }
+  }
+
+  .nav-links {
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+    padding: 10px 0;
+    gap: 0;
+    
+    li {
+      height: auto;
+      width: 100%;
+      text-align: center;
+      padding: 0;
+    }
+
+    a {
+      display: block;
+      padding: 16px;
+      font-size: 1.1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      
+      &.active::after, 
+      li.active > a::after { display: none; }
+      
+      &.active {
+        background: rgba(32, 201, 151, 0.15);
+      }
+    }
+
+    /* Submenu (Accordion) no mobile */
+    .dropdown {
+      .dropdown-content {
+        position: static; /* Remove o flutuante */
+        display: none;
+        background: rgba(0, 0, 0, 0.3); 
+        box-shadow: none;
+        min-width: 100%;
+        border-radius: 0;
+        border: none;
+        
+        a {
+          padding: 14px;
+          font-size: 1rem;
+          color: rgba(255,255,255,0.7);
+        }
+      }
+
+      /* Quando toca/hover no mobile */
+      &:hover .dropdown-content,
+      &:active .dropdown-content {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+}
+
+@keyframes menuDeslizar {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

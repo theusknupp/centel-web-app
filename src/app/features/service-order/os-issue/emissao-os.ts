@@ -121,10 +121,18 @@ export class EmissaoOs implements OnInit {
     }
   }
 
+  dataMinimaHoje: string = new Date().toISOString().split('T')[0];
 
   // --- CONTROLE DAS MODAIS ---
   salvarOs() {
     // Define ação e textos do modal de acordo com edição ou criação
+    if (this.novaOs.data_previsao && !Validadores.isDataMaiorIgualHoje(this.novaOs.data_previsao)) {
+      this.tituloRetorno = 'Data Inválida';
+      this.mensagemRetorno = 'A Data de Previsão não pode ser anterior ao dia de hoje.';
+      this.modalRetorno = true;
+      return; 
+    }
+
     if (this.editandoOsId) {
       this.tituloConfirmacao = 'Confirmar Alteração';
       this.mensagemConfirmacao = 'Deseja salvar as alterações desta Ordem de Serviço?';
