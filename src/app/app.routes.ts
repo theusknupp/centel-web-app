@@ -7,6 +7,8 @@ import { Dashboard } from './features/home/dashboard/dashboard';
 import { ClienteCadastro } from './features/clientes/cliente-cadastro/cliente-cadastro';
 import { EmissaoOs } from './features/service-order/os-issue/emissao-os';
 import { ListaOsComponent } from './features/service-order/lista-os/lista-os';
+import { ReportsComponent } from './features/reports/reports';
+
 
 
 export const routes: Routes = [
@@ -26,5 +28,7 @@ export const routes: Routes = [
   { path: 'emissao-os', component: EmissaoOs},
 
   { path: 'lista-os', component: ListaOsComponent },
+
+  { path: 'relatorio', component: ReportsComponent },
 
 ];

@@ -1,0 +1,66 @@
+<app-navbar></app-navbar>
+
+<main class="container-cadastro">
+  <section class="glass-card-grande">
+    
+    <header style="margin-bottom: 30px;">
+      <h1>Painel de Relatórios</h1>
+      <p>Exporte dados gerenciais e quantitativos em formato PDF padrão Centel.</p>
+    </header>
+
+    <div class="form-grid">
+      <fieldset class="form-fieldset">
+        <legend>Configurações de Exportação</legend>
+        <div class="form-section">
+          
+          <div class="input-full">
+            <label>Tipo de Relatório *</label>
+            <select [(ngModel)]="tipoRelatorio">
+              <optgroup label="Gerenciais e Financeiros">
+                <option value="os_mes">Quantidade de OS no Mês</option>
+                <option value="faturamento_mes">Faturamento Financeiro do Mês</option>
+                <option value="os_periodo">Listagem de OS por Período de Datas</option>
+              </optgroup>
+              <optgroup label="Focados no Cliente">
+                <option value="qtd_cliente">Quantitativo de OS por Cliente (Geral)</option>
+                <option value="dossie_cliente">Dossiê Completo: Todas as OS do Cliente</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="input-half" *ngIf="tipoRelatorio === 'os_mes' || tipoRelatorio === 'faturamento_mes'">
+            <label>Selecione o Mês e Ano *</label>
+            <input type="month" [(ngModel)]="mesReferencia">
+          </div>
+
+          <ng-container *ngIf="tipoRelatorio === 'os_periodo'">
+            <div class="input-quarter">
+              <label>Data Inicial *</label>
+              <input type="date" [(ngModel)]="dataInicio">
+            </div>
+            <div class="input-quarter">
+              <label>Data Final *</label>
+              <input type="date" [(ngModel)]="dataFim">
+            </div>
+          </ng-container>
+
+          <div class="input-half" *ngIf="tipoRelatorio === 'dossie_cliente'">
+            <label>Selecione o Cliente *</label>
+            <select [(ngModel)]="clienteSelecionado">
+              <option [value]="null" disabled selected>Escolha um cliente...</option>
+              <option *ngFor="let c of listaClientes" [value]="c.id">{{ c.nome }}</option>
+            </select>
+          </div>
+
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <button type="button" class="btn-salvar" (click)="gerarRelatorio()" [disabled]="carregando">
+          {{ carregando ? 'Processando Dados...' : 'Gerar Relatório em PDF' }}
+        </button>
+      </div>
+    </div>
+
+  </section>
+</main>
