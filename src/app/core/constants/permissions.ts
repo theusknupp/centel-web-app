@@ -25,9 +25,9 @@ export const Permissoes = {
   ESTOQUE: {
     VISUALIZAR: 'estoque:visualizar',
   },
-RELATORIO: {
-    VISUALIZAR: 'relatorio:visualizar',
-  },
+  RELATORIO: {
+      VISUALIZAR: 'relatorio:visualizar',
+    },
 } as const;
 
 /**
