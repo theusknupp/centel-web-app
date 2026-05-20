@@ -5,15 +5,19 @@ import { Navbar } from '../../../shared/components/navbar/navbar';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { ModalConfirmacao } from '../../../shared/components/modal-confirmacao/modal-confirmacao';
 import { ModalRetorno } from '../../../shared/components/modal-retorno/modal-retorno';
+import { TemPermissaoDirective } from '../../../shared/components/permissoes/tem-permissao.directive';
+import { Permissoes } from '../../../core/constants/permissions';
 
 @Component({
   selector: 'app-lista-os',
   standalone: true,
-  imports: [Navbar, CommonModule, ModalConfirmacao, ModalRetorno],
+  imports: [Navbar, CommonModule, ModalConfirmacao, ModalRetorno, TemPermissaoDirective],
   templateUrl: './lista-os.html',
   styleUrl: './lista-os.scss'
 })
 export class ListaOsComponent implements OnInit {
+  protected readonly Permissoes = Permissoes;
+
   carregando = true;
   listaOrdensServico: any[] = [];
   listaClientes: any[] = [];

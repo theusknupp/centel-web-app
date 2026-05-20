@@ -34,8 +34,8 @@
             <td>{{ os.status_servico }}</td>
             <td>{{ os.valor_total | number:'1.2-2' }}</td>
             <td>
-              <button class="btn-editar" (click)="editarOrdemServico(os)">Editar</button>
-              <button class="btn-excluir" (click)="confirmarExclusao(os)">Excluir</button>
+              <button *temPermissao="[ Permissoes.ORDEM_SERVICO.EDITAR ]" class="btn-editar" (click)="editarOrdemServico(os)">Editar</button>
+              <button *temPermissao="[ Permissoes.ORDEM_SERVICO.EXCLUIR ]" class="btn-excluir" (click)="confirmarExclusao(os)">Excluir</button>
             </td>
           </tr>
         </tbody>

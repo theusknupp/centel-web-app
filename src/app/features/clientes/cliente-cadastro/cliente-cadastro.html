@@ -3,13 +3,13 @@
 <main class="container-cadastro" id="cadastro">
 
     <section class="glass-card-grande">
-        <header>
+        <header *temPermissao="[ Permissoes.CLIENTE.CADASTRAR, Permissoes.CLIENTE.EDITAR ]; modo: 'algum'">
             <h1>Cadastro de Cliente</h1>
             <p>Preencha os dados para registrar um Cliente.</p>
         </header>
 
         <!--A função de Salvar o Cliente é chamada através do NgSubmit-->
-        <form (ngSubmit)="salvarCliente()" class="form-grid">
+        <form (ngSubmit)="salvarCliente()" class="form-grid" *temPermissao="[ Permissoes.CLIENTE.CADASTRAR, Permissoes.CLIENTE.EDITAR ]; modo: 'algum'">
 
             <div class="form-section">
                 <div class="input-full">
@@ -80,8 +80,7 @@
 
             <div class="form-actions">
                 <button type="button" class="btn-cancelar" (click)="limparFormulario()"> Cancelar </button>
-                <button type="submit" class="btn-salvar">{{ editandoClienteId ? 'Atualizar Cadastro' : 'Finalizar
-                    Cadastro' }}</button>
+                <button type="submit" class="btn-salvar">{{ editandoClienteId ? 'Atualizar Cadastro' : 'Finalizar Cadastro' }}</button>
             </div>
         </form>
 
@@ -113,12 +112,12 @@
                         <td>{{ cliente.email }}</td>
                         <td>{{ cliente.cidade }}</td>
                         <td>
-                            <button type="button" class="btn-editar"
+                            <button *temPermissao="[ Permissoes.CLIENTE.EDITAR ]" type="button" class="btn-editar"
                                 (click)="editarCliente(cliente); $event.stopPropagation()">
                                 Editar
                             </button>
 
-                            <button type="button" class="btn-excluir"
+                            <button *temPermissao="[ Permissoes.CLIENTE.EXCLUIR ]" type="button" class="btn-excluir"
                                 (click)="confirmarExclusaoCliente(cliente); $event.stopPropagation()">
                                 Excluir
                             </button>

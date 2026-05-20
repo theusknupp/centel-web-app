@@ -7,6 +7,8 @@ import { Dashboard } from './features/home/dashboard/dashboard';
 import { ClienteCadastro } from './features/clientes/cliente-cadastro/cliente-cadastro';
 import { EmissaoOs } from './features/service-order/os-issue/emissao-os';
 import { ListaOsComponent } from './features/service-order/lista-os/lista-os';
+import { permissaoGuard } from './shared/components/permissoes/permissao.guard';
+import { Permissoes } from './core/constants/permissions';
 
 
 export const routes: Routes = [
@@ -19,12 +21,49 @@ export const routes: Routes = [
   // 3. ROTA DO DASHBOARD: Quando a URL for '/dashboard', mostra a tela DASHBOARD.
   { path: 'dashboard', component: Dashboard },
 
-  // 4. ROTA DO CADASTRO CLIENTE: Quando a URL for '/cliente mostra a tela CLIENTE
-  { path: 'cadastro', component: ClienteCadastro},
+  // 4. ROTA DO CADASTRO CLIENTE: Requer qualquer permissão de cliente
+  {
+    path: 'cadastro',
+    component: ClienteCadastro,
+    canActivate: [
+      permissaoGuard(
+        [
+          Permissoes.CLIENTE.VISUALIZAR,
+          Permissoes.CLIENTE.CADASTRAR,
+          Permissoes.CLIENTE.EDITAR,
+          Permissoes.CLIENTE.EXCLUIR,
+        ],
+        'alguma'
+      ),
+    ],
+  },
 
-  // 5. ROTA DA EMISSÃO DE OS
-  { path: 'emissao-os', component: EmissaoOs},
+  // 5. ROTA DA EMISSÃO DE OS: Requer permissão para cadastrar ou editar
+  {
+    path: 'emissao-os',
+    component: EmissaoOs,
+    canActivate: [
+      permissaoGuard(
+        [Permissoes.ORDEM_SERVICO.CADASTRAR, Permissoes.ORDEM_SERVICO.EDITAR],
+        'alguma'
+      ),
+    ],
+  },
 
-  { path: 'lista-os', component: ListaOsComponent },
+  // 6. ROTA DA LISTAGEM DE OS: Requer permissão para visualizar, editar ou excluir
+  {
+    path: 'lista-os',
+    component: ListaOsComponent,
+    canActivate: [
+      permissaoGuard(
+        [
+          Permissoes.ORDEM_SERVICO.VISUALIZAR,
+          Permissoes.ORDEM_SERVICO.EDITAR,
+          Permissoes.ORDEM_SERVICO.EXCLUIR,
+        ],
+        'alguma'
+      ),
+    ],
+  },
 
 ];

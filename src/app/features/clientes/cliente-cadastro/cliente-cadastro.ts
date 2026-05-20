@@ -7,14 +7,18 @@ import { CommonModule } from '@angular/common';
 import { ModalConfirmacao } from '../../../shared/components/modal-confirmacao/modal-confirmacao';
 import { ModalRetorno } from '../../../shared/components/modal-retorno/modal-retorno';
 import { Validadores } from '../../../utils/validadores';
+import { TemPermissaoDirective } from '../../../shared/components/permissoes/tem-permissao.directive';
+import { Permissoes } from '../../../core/constants/permissions';
 
 @Component({
   selector: 'app-cliente-cadastro',
-  imports: [Navbar, FormsModule, CommonModule, ModalConfirmacao, ModalRetorno],
+  imports: [Navbar, FormsModule, CommonModule, ModalConfirmacao, ModalRetorno, TemPermissaoDirective],
   templateUrl: './cliente-cadastro.html',
   styleUrls: ['./cliente-cadastro.scss'],
 })
 export class ClienteCadastro implements OnInit {
+  protected readonly Permissoes = Permissoes;
+
   modalConfirmacao = false;
   modalRetorno = false;
   carregando = false;
