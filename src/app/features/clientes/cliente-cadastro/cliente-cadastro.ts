@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Navbar } from '../../../shared/components/navbar/navbar';
 import { Cliente } from '../../../models/cliente';
 import { SupabaseService } from '../../../core/services/supabase.service';
@@ -12,7 +13,16 @@ import { Permissoes } from '../../../core/constants/permissions';
 
 @Component({
   selector: 'app-cliente-cadastro',
-  imports: [Navbar, FormsModule, CommonModule, ModalConfirmacao, ModalRetorno, TemPermissaoDirective],
+
+  imports: [
+    Navbar,
+    ReactiveFormsModule,
+    FormsModule,
+    CommonModule,
+    ModalConfirmacao,
+    ModalRetorno,
+    TemPermissaoDirective
+  ],
   templateUrl: './cliente-cadastro.html',
   styleUrls: ['./cliente-cadastro.scss'],
 })
@@ -26,10 +36,9 @@ export class ClienteCadastro implements OnInit {
   listaClientes: any[] = [];
   editandoClienteId: number | null = null;
 
-  // pesquisa
+  // Termo pesquisa para filtrar (+ validacoes)
   termoPesquisa = '';
-  nomeInvalido = false;
-  cpfInvalido = false;
+  readonly ufsBrasil = Validadores.UFS_BRASIL;
 
   tituloConfirmacao = 'Confirmar Cadastro';
   mensagemConfirmacao = 'Tem a certeza que deseja prosseguir?';
@@ -40,27 +49,34 @@ export class ClienteCadastro implements OnInit {
   tituloRetorno = '';
   mensagemRetorno = '';
 
-  novoCliente: Cliente = {
-    nome: '',
-    cpf_cnpj: '',
-    nrtel: '',
-    email: '',
-    cep: '',
-    logradouro: '',
-    numero: '',
-    bairro: '',
-    cidade: '',
-    uf: '',
-    tipo_pessoa: 'PF',
-  };
+  //Formulário de cadastro do cliente (Reactive Forms)
+  clienteForm: FormGroup;
 
-  constructor(private supabaseService: SupabaseService) { }
+  //Validações adicionais no formulário
+  constructor(
+    private supabaseService: SupabaseService,
+    private fb: FormBuilder,
+  ) {
+    this.clienteForm = this.fb.group({
+      nome: ['', Validators.required],
+      cpf_cnpj: ['', [Validators.required, Validadores.cpfCnpj()]],
+      nrtel: ['', [Validators.required, Validadores.telefone()]],
+      email: ['', [Validators.required, Validadores.emailDominioPermitido()]],
+      tipo_pessoa: ['PF', Validators.required],
+      cep: ['', Validadores.cep()],
+      logradouro: [''],
+      numero: ['', [Validators.required, Validadores.apenasNumeros()]],
+      bairro: ['', Validators.required],
+      cidade: ['', Validators.required],
+      uf: ['', [Validators.required, Validadores.uf()]],
+    });
+  }
 
   ngOnInit() {
     this.buscarClientes();
   }
 
- get listaClientesFiltrada() {
+  get listaClientesFiltrada() {
     const termo = (this.termoPesquisa || '').trim().toLowerCase();
     if (!termo) return this.listaClientes;
 
@@ -79,44 +95,18 @@ export class ClienteCadastro implements OnInit {
     });
   }
 
+  // Removi controles manuais para o Angular verificar diretamente a validação dos campos
+  campoInvalido(nome: string): boolean {
+    const control = this.clienteForm.get(nome);
+    return !!(control && control.invalid && (control.dirty || control.touched));
+  }
 
+  //Chamada da funcao para salvar 
   salvarCliente() {
-    const nome = (this.novoCliente.nome || '').trim();
-    const cpf = (this.novoCliente.cpf_cnpj || '').trim();
-
-    // sinaliza campos inválidos visualmente
-    this.nomeInvalido = !nome;
-    // cpf pode vir mascarado, normalize para dígitos ao validar obrigatoriedade
-    const cpfDigits = (cpf || '').replace(/\D/g, '');
-    this.cpfInvalido = !cpfDigits;
-
-    if (!nome || !cpf) {
-      const acao = this.editandoClienteId ? 'salvar' : 'criar';
-      if (!nome && !cpf) {
-        this.tituloRetorno = 'Campos obrigatórios';
-        this.mensagemRetorno = `Não é possível ${acao} um cliente sem Razão Social e CPF/CNPJ.`;
-      } else if (!nome) {
-        this.tituloRetorno = 'Campo obrigatório';
-        this.mensagemRetorno = `Não é possível ${acao} um cliente sem Razão Social.`;
-      } else {
-        this.tituloRetorno = 'Campo obrigatório';
-        this.mensagemRetorno = `Não é possível ${acao} um cliente sem CPF/CNPJ.`;
-      }
-      this.modalRetorno = true;
-      return;
-    }
-
-    // valida CPF/CNPJ - chama utils de validação
-    if (!Validadores.isCpfCnpjValido(cpf)) {
-
-      //Pega o tamanho do cpf.
-      const digitos = (cpf || '').replace(/\D/g, '').length;
-      //Define se é CPF ou CNPJ pela quantidade de digitos.
-      const tipo = digitos === 11 ? 'CPF' : digitos === 14 ? 'CNPJ' : 'CPF/CNPJ';
-      const acao = this.editandoClienteId ? 'salvar' : 'criar';
-      
-      this.tituloRetorno = 'Valor inválido';
-      this.mensagemRetorno = `Não é possível ${acao} um cliente com ${tipo} inválido.`;
+    if (this.clienteForm.invalid) {
+      this.clienteForm.markAllAsTouched();
+      this.tituloRetorno = 'Formulário inválido';
+      this.mensagemRetorno = this.mensagemErrosValidacao();
       this.modalRetorno = true;
       return;
     }
@@ -138,50 +128,114 @@ export class ClienteCadastro implements OnInit {
     this.modalConfirmacao = true;
   }
 
+  //Funcao para erro de validacao (+) 
+  private mensagemErrosValidacao(): string {
+    const erros: string[] = [];
+    const f = this.clienteForm;
+
+    if (f.get('nome')?.hasError('required')) {
+      erros.push('Nome / Razão Social é obrigatório.');
+    }
+    if (f.get('cpf_cnpj')?.hasError('required')) {
+      erros.push('CPF/CNPJ é obrigatório.');
+    } else if (f.get('cpf_cnpj')?.hasError('cpfCnpjInvalido')) {
+      erros.push('CPF/CNPJ inválido.');
+    }
+    if (f.get('nrtel')?.hasError('required')) {
+      erros.push('Telefone é obrigatório.');
+    } else if (f.get('nrtel')?.hasError('telefoneInvalido')) {
+      erros.push('Telefone deve estar no formato (00) 00000-0000.');
+    }
+    if (f.get('email')?.hasError('required')) {
+      erros.push('E-mail é obrigatório.');
+    } else if (f.get('email')?.hasError('emailInvalido')) {
+      erros.push('E-mail com formato inválido.');
+    } else if (f.get('email')?.hasError('dominioNaoPermitido')) {
+      erros.push(
+        'Use um e-mail dos domínios permitidos: gmail.com, outlook.com, icloud.com, hotmail.com, yahoo.com.','live.com','mec.com.br','uol.com',
+      );
+    }
+    if (f.get('cep')?.hasError('cepInvalido')) {
+      erros.push('CEP deve estar no formato 00000-000.');
+    }
+    if (f.get('numero')?.hasError('required')) {
+      erros.push('Número é obrigatório.');
+    } else if (f.get('numero')?.hasError('apenasNumeros')) {
+      erros.push('Número da casa deve conter apenas dígitos.');
+    }
+    if (f.get('bairro')?.hasError('required')) erros.push('Bairro é obrigatório.');
+    if (f.get('cidade')?.hasError('required')) erros.push('Cidade é obrigatória.');
+    if (f.get('uf')?.hasError('required')) {
+      erros.push('UF é obrigatória.');
+    } else if (f.get('uf')?.hasError('ufInvalida')) {
+      erros.push('Selecione uma UF válida (2 letras).');
+    }
+
+    return erros.length
+      ? erros.join(' ')
+      : 'Verifique os campos destacados e tente novamente.';
+  }
+
   onCpfCnpjInput(event: Event) {
     const input = event.target as HTMLInputElement;
-    let raw = input.value || '';
-    const digits = Validadores.apenasDigitos(raw).slice(0, 14); // limitar a 14 dígitos
+    const digits = Validadores.apenasDigitos(input.value).slice(0, 14);
 
-    let masked = raw;
-    if (digits.length <= 11) {
-      masked = Validadores.formatCpf(digits);
-    } else {
-      masked = Validadores.formatCnpj(digits);
-    }
+    const masked =
+      digits.length <= 11 ? Validadores.formatCpf(digits) : Validadores.formatCnpj(digits);
 
     input.value = masked;
-    this.novoCliente.cpf_cnpj = masked;
-
-    // definir estado visual de invalidez: se número incompleto ou inválido
-    if (digits.length === 11) {
-      this.cpfInvalido = Validadores.isValidCpf(digits);
-    } else if (digits.length === 14) {
-      this.cpfInvalido = Validadores.isValidCnpj(digits);
-    } else {
-      this.cpfInvalido = digits.length > 0; // incompleto -> sinalizar
-    }
+    this.clienteForm.get('cpf_cnpj')?.setValue(masked, { emitEvent: true });
   }
 
   validarCpfCnpjOnBlur() {
-    const digits = Validadores.apenasDigitos(this.novoCliente.cpf_cnpj || '');
-    if (digits.length === 11) this.cpfInvalido = !Validadores.isValidCpf(digits);
-    else if (digits.length === 14) this.cpfInvalido = !Validadores.isValidCnpj(digits);
-    else this.cpfInvalido = digits.length > 0;
+    this.clienteForm.get('cpf_cnpj')?.markAsTouched();
+    this.clienteForm.get('cpf_cnpj')?.updateValueAndValidity();
+  }
+  // Padronização para digitação do telefone (+)
+  onTelefoneInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const digits = Validadores.apenasDigitos(input.value).slice(0, 11);
+    const masked = Validadores.formatTelefone(digits);
+
+    input.value = masked;
+    this.clienteForm.get('nrtel')?.setValue(masked, { emitEvent: true });
+  }
+  // Padronização para digitação do CEP(+)
+  onCepInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const digits = Validadores.apenasDigitos(input.value).slice(0, 8);
+    const masked = Validadores.formatCep(digits);
+
+    input.value = masked;
+    this.clienteForm.get('cep')?.setValue(masked, { emitEvent: true });
+  }
+  // Não salvar caracteres no número da casa(+)
+  onNumeroInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const digits = Validadores.apenasDigitos(input.value);
+
+    input.value = digits;
+    this.clienteForm.get('numero')?.setValue(digits, { emitEvent: true });
   }
 
   fecharModalSemSalvar() {
     this.modalConfirmacao = false;
   }
 
+  private getClienteFromForm(): Cliente {
+    return this.clienteForm.getRawValue() as Cliente;
+  }
+
   async inserirCliente() {
     this.modalConfirmacao = false;
     this.carregando = true;
-
+    // (+) Funcao para inserir cliente
     try {
-      const { error } = await this.supabaseService.getClient()
+      const { error } = await this.supabaseService
+        .getClient()
         .from('clientes')
-        .insert([this.novoCliente]);
+        // 
+        .insert([this.getClienteFromForm()]);
 
       if (error) {
         this.tituloRetorno = 'Falha';
@@ -207,7 +261,8 @@ export class ClienteCadastro implements OnInit {
     this.carregando = true;
 
     try {
-      const { data, error } = await this.supabaseService.getClient()
+      const { data, error } = await this.supabaseService
+        .getClient()
         .from('clientes')
         .select('*')
         .order('id', { ascending: false });
@@ -230,24 +285,40 @@ export class ClienteCadastro implements OnInit {
 
   editarCliente(cliente: any) {
     this.editandoClienteId = cliente.id;
-    this.novoCliente = {
+
+    const telDigits = Validadores.apenasDigitos(cliente.nrtel ?? '');
+    const cepDigits = Validadores.apenasDigitos(cliente.cep ?? '');
+    const cpfCnpjDigits = Validadores.apenasDigitos(cliente.cpf_cnpj ?? '');
+
+    // Melhora na edicao 
+    this.clienteForm.patchValue({
       nome: cliente.nome ?? '',
-      cpf_cnpj: cliente.cpf_cnpj ?? '',
-      email: cliente.email ?? '',
-      nrtel: cliente.nrtel ?? '',
-      cep: cliente.cep ?? '',
+      cpf_cnpj: cpfCnpjDigits
+        ? cpfCnpjDigits.length <= 11
+          ? Validadores.formatCpf(cpfCnpjDigits)
+          : Validadores.formatCnpj(cpfCnpjDigits)
+        : '',
+      email: (cliente.email ?? '').trim().toLowerCase(),
+      nrtel: telDigits ? Validadores.formatTelefone(telDigits) : '',
+      cep: cepDigits ? Validadores.formatCep(cepDigits) : '',
       logradouro: cliente.logradouro ?? '',
-      numero: cliente.numero ?? '',
+      numero: Validadores.apenasDigitos(String(cliente.numero ?? '')),
       bairro: cliente.bairro ?? '',
       cidade: cliente.cidade ?? '',
-      uf: cliente.uf ?? '',
+      uf: (cliente.uf ?? '').trim().toUpperCase(),
       tipo_pessoa: cliente.tipo_pessoa ?? 'PF',
-    };
+    });
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    // resetar marcação de erro ao entrar em edição
-    this.nomeInvalido = false;
-    this.cpfInvalido = false;
+  }
+
+  // Para a formatação do email
+  onEmailBlur() {
+    const control = this.clienteForm.get('email');
+    const normalizado = (control?.value || '').trim().toLowerCase();
+    control?.setValue(normalizado, { emitEvent: true });
+    control?.markAsTouched();
+    control?.updateValueAndValidity();
   }
 
   async atualizarCliente() {
@@ -258,10 +329,13 @@ export class ClienteCadastro implements OnInit {
     this.modalConfirmacao = false;
     this.carregando = true;
 
+    // (+) Funcao para atualizar cliente
     try {
-      const { error } = await this.supabaseService.getClient()
+      const { error } = await this.supabaseService
+        .getClient()
         .from('clientes')
-        .update(this.novoCliente)
+        // Atualiza os dados do cliente com os dados do formulário
+        .update(this.getClienteFromForm())
         .eq('id', this.editandoClienteId);
 
       if (error) {
@@ -307,7 +381,8 @@ export class ClienteCadastro implements OnInit {
 
   async clientePossuiOrdemServico(clienteId: number): Promise<boolean> {
     try {
-      const { data, error } = await this.supabaseService.getClient()
+      const { data, error } = await this.supabaseService
+        .getClient()
         .from('ordens_servico')
         .select('id')
         .eq('cliente_id', clienteId)
@@ -320,9 +395,10 @@ export class ClienteCadastro implements OnInit {
       return !!data && data.length > 0;
     } catch {
       this.tituloRetorno = 'Erro';
-      this.mensagemRetorno = 'Não foi possível validar se o cliente possui Ordem de Serviço vinculada.';
+      this.mensagemRetorno =
+        'Não foi possível validar se o cliente possui Ordem de Serviço vinculada.';
       this.modalRetorno = true;
-      return true; // por segurança, bloqueia exclusão em caso de erro
+      return true;
     }
   }
 
@@ -331,7 +407,8 @@ export class ClienteCadastro implements OnInit {
     this.carregando = true;
 
     try {
-      const { error } = await this.supabaseService.getClient()
+      const { error } = await this.supabaseService
+        .getClient()
         .from('clientes')
         .delete()
         .eq('id', id);
@@ -365,8 +442,7 @@ export class ClienteCadastro implements OnInit {
 
   limparFormulario() {
     this.editandoClienteId = null;
-
-    this.novoCliente = {
+    this.clienteForm.reset({
       nome: '',
       cpf_cnpj: '',
       email: '',
@@ -378,8 +454,6 @@ export class ClienteCadastro implements OnInit {
       cidade: '',
       uf: '',
       tipo_pessoa: 'PF',
-    };
-    this.nomeInvalido = false;
-    this.cpfInvalido = false;
+    });
   }
 }

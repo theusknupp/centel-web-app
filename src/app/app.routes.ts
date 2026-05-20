@@ -9,6 +9,7 @@ import { EmissaoOs } from './features/service-order/os-issue/emissao-os';
 import { ListaOsComponent } from './features/service-order/lista-os/lista-os';
 import { permissaoGuard } from './shared/components/permissoes/permissao.guard';
 import { Permissoes } from './core/constants/permissions';
+import { ReportsComponent } from './features/reports/reports';
 
 
 export const routes: Routes = [
@@ -65,5 +66,7 @@ export const routes: Routes = [
       ),
     ],
   },
+
+  { path: 'relatorio', component: ReportsComponent },
 
 ];
