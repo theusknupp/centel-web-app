@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common'; // Para usar o *ngIf
 import { FormsModule } from '@angular/forms'; // Para usar o [(ngModel)]
 import { Router } from '@angular/router'; // Para mudar de página
 import { SupabaseService } from '../../../core/services/supabase.service'; // Nossa conexão
+import { PermissaoService } from '../../../core/services/permissao.service';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +25,8 @@ export class Login {
 
   constructor(
     private supabaseService: SupabaseService,
-    private router: Router
+    private router: Router,
+    private permissaoService: PermissaoService
   ) {}
 
   // Função disparada pelo botão 'Entrar'
@@ -50,10 +52,34 @@ export class Login {
       // Se o banco retornar erro (senha errada, por exemplo)
       if (error) {
         this.mensagemErro = 'Usuário ou senha inválidos.';
-      } 
+      }
       // Se der sucesso e o usuário existir
       else if (data.user) {
+        // Checa se o usuário tem o perfil selecionado
+        let usuarioLogadoTemPerfil = await this.permissaoService.temPerfil(this.tipoUsuario);
+
+        if (!usuarioLogadoTemPerfil) {
+          // Se não tiver perfil
+          this.mensagemErro = 'Tipo de usuário inválido.';
+          this.carregando = false;
+          this.supabaseService.getClient().auth.signOut();
+          return;
+        }
+
         console.log('Login realizado! Bem-vindo ao sistema Centel.');
+        
+        // Garante que a sessão está carregada antes de chamar o RPC
+        const { data: { session } } = await this.supabaseService.getClient().auth.getSession();
+
+        if (!session) {
+          this.mensagemErro = 'Erro ao estabelecer sessão. Tente novamente.';
+          this.carregando = false;
+          return;
+        }
+        
+        // Carrega as permissões passando o user_id do login (evita segunda chamada ao getUser)
+        await this.permissaoService.carregarPermissoes(true, data.user!.id);
+
         
         // Esta linha faz o redirecionamento imediato para a tela inicial!
         this.router.navigate(['/dashboard']);

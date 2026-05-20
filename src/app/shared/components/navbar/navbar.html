@@ -11,17 +11,31 @@
  <nav [class.aberto]="menuAberto">
     <ul class="nav-links">
       
-      <li class="dropdown" routerLinkActive="active">
-        <a style="cursor: pointer;">Ordens de Serviço ▾</a>   
-        <div class="dropdown-content"> 
-         <a routerLink="/emissao-os" routerLinkActive="active" (click)="fecharMenu()">Emitir Nova OS</a>
-         <a routerLink="/lista-os" routerLinkActive="active" (click)="fecharMenu()">Listar Ordens</a>
+      <li
+        *temPermissao="[ Permissoes.ORDEM_SERVICO.VISUALIZAR, Permissoes.ORDEM_SERVICO.CADASTRAR, Permissoes.ORDEM_SERVICO.EDITAR, Permissoes.ORDEM_SERVICO.EXCLUIR ]; modo: 'algum'"
+        class="dropdown" routerLinkActive="active">
+        <a style="cursor: pointer;">Ordens de Serviço ▾</a>
+        <div class="dropdown-content">
+          <a
+            *temPermissao="[ Permissoes.ORDEM_SERVICO.CADASTRAR, Permissoes.ORDEM_SERVICO.EDITAR ]; modo: 'algum'"
+            routerLink="/emissao-os" routerLinkActive="active"
+            (click)="fecharMenu()">Emitir Nova OS</a>
+          <a routerLink="/lista-os" routerLinkActive="active"
+            *temPermissao="[ Permissoes.ORDEM_SERVICO.CADASTRAR, Permissoes.ORDEM_SERVICO.EDITAR, Permissoes.ORDEM_SERVICO.EXCLUIR ]; modo: 'algum'"
+            (click)="fecharMenu()">Listar Ordens</a>
         </div>
       </li>
       
-      <li><a routerLink="/cadastro" routerLinkActive="active" (click)="fecharMenu()">Clientes</a></li>
-      <li><a routerLink="/estoque" routerLinkActive="active" (click)="fecharMenu()">Estoque</a></li>
-      <li><a routerLink="/relatorio" routerLinkActive="active" (click)="fecharMenu()">Relatório</a></li>
+      <li *temPermissao="[ Permissoes.CLIENTE.VISUALIZAR, Permissoes.CLIENTE.CADASTRAR, Permissoes.CLIENTE.EDITAR, Permissoes.CLIENTE.EXCLUIR ]; modo: 'algum'">
+        <a routerLink="/cadastro" routerLinkActive="active" (click)="fecharMenu()">Clientes</a>
+      </li>
+      
+      <li *temPermissao="[ Permissoes.ESTOQUE.VISUALIZAR ]; modo: 'algum'">
+        <a routerLink="/estoque" routerLinkActive="active" (click)="fecharMenu()">Estoque</a>
+      </li>
+      <li *temPermissao="[ Permissoes.RELATORIO.VISUALIZAR ]; modo: 'algum'">
+        <a routerLink="/relatorio" routerLinkActive="active" (click)="fecharMenu()">Relatório</a>
+      </li>
     </ul>
   </nav>
   

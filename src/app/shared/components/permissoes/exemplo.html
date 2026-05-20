@@ -1,0 +1,9 @@
+<!-- Permissão única -->
+<button *temPermissao="'ordem_de_servico:editar'">Editar Ordem de Serviço</button>
+
+<!-- Precisa de TODAS permissões -->
+<div *temPermissao="['ordem_de_servico:editar', 'ordem_de_servico:excluir']; mode: 'todos'">Criar Ordem de Serviço</div>
+
+<!-- Senão -->
+<ng-template #semAcesso><p>Você não tem permissão para acessar esta funcionalidade.</p></ng-template>
+<div *temPermissao="'cliente:cliente'; else semAcesso">Editar Cliente</div>
