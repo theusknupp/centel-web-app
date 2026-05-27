@@ -125,6 +125,14 @@ export class EmissaoOs implements OnInit {
 
   // --- CONTROLE DAS MODAIS ---
   salvarOs() {
+
+    if (!this.novaOs.cliente_id || !this.novaOs.tipo_servico_id || !this.novaOs.equipamento || !this.novaOs.marca_modelo) {
+      this.tituloRetorno = 'Dados Incompletos';
+      this.mensagemRetorno = 'Por favor, preencha o Cliente, Tipo de Serviço, Equipamento e Marca/Modelo antes de emitir a OS.';
+      this.modalRetorno = true;
+      return; 
+    }
+
     // Define ação e textos do modal de acordo com edição ou criação
     if (this.novaOs.data_previsao && !Validadores.isDataMaiorIgualHoje(this.novaOs.data_previsao)) {
       this.tituloRetorno = 'Data Inválida';
