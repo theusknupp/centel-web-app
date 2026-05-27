@@ -1,0 +1,66 @@
+<app-navbar></app-navbar>  
+
+<main class="container-cadastro">
+    
+    <section class="glass-card-grande">
+        
+        <header>
+            <h1>Lista de Clientes</h1>
+            <p>Consulte, edite ou exclua os clientes cadastrados no sistema.</p>
+        </header>
+
+        <section class="cliente-table-section">
+            <div class="barra-pesquisa">
+                <input type="text" name="pesquisaCliente" placeholder="Pesquisar por nome ou CPF/CNPJ"
+                    [(ngModel)]="termoPesquisa" [ngModelOptions]="{ standalone: true }">
+            </div>
+
+            <table class="cliente-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>CPF / CNPJ</th>
+                        <th>E-mail</th>
+                        <th>Cidade</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let cliente of listaClientesFiltrada" (click)="editarCliente(cliente)">
+                        <td>{{ cliente.id }}</td>
+                        <td>{{ cliente.nome }}</td>
+                        <td>{{ cliente.cpf_cnpj }}</td>
+                        <td>{{ cliente.email }}</td>
+                        <td>{{ cliente.cidade }}</td>
+                        <td>
+                            <button *temPermissao="[ Permissoes.CLIENTE.EDITAR ]" type="button" class="btn-editar"
+                                (click)="editarCliente(cliente); $event.stopPropagation()">
+                                Editar
+                            </button>
+
+                            <button *temPermissao="[ Permissoes.CLIENTE.EXCLUIR ]" type="button" class="btn-excluir"
+                                (click)="confirmarExclusaoCliente(cliente); $event.stopPropagation()">
+                                Excluir
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr *ngIf="listaClientesFiltrada.length === 0">
+                        <td colspan="6">Nenhum cliente encontrado.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </section>
+</main>
+
+<app-modal-confirmacao *ngIf="modalConfirmacao" [titulo]="tituloConfirmacao" [mensagem]="mensagemConfirmacao"
+    textoBotaoConfirmar="{{ textoBotaoConfirmar }}" textoBotaoCancelar="{{ textoBotaoCancelar }}"
+    (aoConfirmar)="acaoConfirmacao()" (aoCancelar)="fecharModalSemSalvar()">
+</app-modal-confirmacao>
+
+<app-modal-retorno *ngIf="modalRetorno" [titulo]="tituloRetorno" [mensagem]="mensagemRetorno"
+    textoBotaoConfirmar="Entendido" (aoConfirmar)="fecharModalRetorno()">
+</app-modal-retorno>

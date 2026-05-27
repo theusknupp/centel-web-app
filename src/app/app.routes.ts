@@ -10,6 +10,7 @@ import { ListaOsComponent } from './features/service-order/lista-os/lista-os';
 import { permissaoGuard } from './shared/components/permissoes/permissao.guard';
 import { Permissoes } from './core/constants/permissions';
 import { ReportsComponent } from './features/reports/reports';
+import { ListaClientes } from './features/clientes/lista-clientes/lista-clientes';
 
 
 export const routes: Routes = [
@@ -68,5 +69,8 @@ export const routes: Routes = [
   },
 
   { path: 'relatorio', component: ReportsComponent },
+
+  { path: 'lista-clientes', component: ListaClientes },
+
 
 ];

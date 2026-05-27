@@ -13,7 +13,7 @@ import { Permissoes } from '../../../core/constants/permissions';
 
 @Component({
   selector: 'app-cliente-cadastro',
-
+  standalone: true, // Adicionado para garantir o funcionamento com imports diretos
   imports: [
     Navbar,
     ReactiveFormsModule,
@@ -33,11 +33,8 @@ export class ClienteCadastro implements OnInit {
   modalRetorno = false;
   carregando = false;
 
-  listaClientes: any[] = [];
   editandoClienteId: number | null = null;
 
-  // Termo pesquisa para filtrar (+ validacoes)
-  termoPesquisa = '';
   readonly ufsBrasil = Validadores.UFS_BRASIL;
 
   tituloConfirmacao = 'Confirmar Cadastro';
@@ -73,26 +70,11 @@ export class ClienteCadastro implements OnInit {
   }
 
   ngOnInit() {
-    this.buscarClientes();
-  }
-
-  get listaClientesFiltrada() {
-    const termo = (this.termoPesquisa || '').trim().toLowerCase();
-    if (!termo) return this.listaClientes;
-
-    // versão de busca que exige que o nome ou CPF/CNPJ comecem pelo termo informado
-    const termoDigits = termo.replace(/\D/g, '');
-
-    return this.listaClientes.filter((cliente) => {
-      const nome = (cliente.nome || '').toLowerCase();
-      const cpfCnpj = (cliente.cpf_cnpj || '').toLowerCase();
-      const cpfDigits = (cpfCnpj || '').replace(/\D/g, '');
-
-      const nomeMatch = nome.startsWith(termo);
-      const cpfMatch = termoDigits ? cpfDigits.startsWith(termoDigits) : false;
-
-      return nomeMatch || cpfMatch;
-    });
+    // Captura os dados que vieram do roteador se o usuário clicou em "Editar" na tela Lista
+    const clienteRecebido = history.state.clienteSelecionado;
+    if (clienteRecebido) {
+      this.editarCliente(clienteRecebido);
+    }
   }
 
   // Removi controles manuais para o Angular verificar diretamente a validação dos campos
@@ -191,6 +173,7 @@ export class ClienteCadastro implements OnInit {
     this.clienteForm.get('cpf_cnpj')?.markAsTouched();
     this.clienteForm.get('cpf_cnpj')?.updateValueAndValidity();
   }
+  
   // Padronização para digitação do telefone (+)
   onTelefoneInput(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -200,6 +183,7 @@ export class ClienteCadastro implements OnInit {
     input.value = masked;
     this.clienteForm.get('nrtel')?.setValue(masked, { emitEvent: true });
   }
+  
   // Padronização para digitação do CEP(+)
   onCepInput(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -209,6 +193,7 @@ export class ClienteCadastro implements OnInit {
     input.value = masked;
     this.clienteForm.get('cep')?.setValue(masked, { emitEvent: true });
   }
+  
   // Não salvar caracteres no número da casa(+)
   onNumeroInput(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -244,39 +229,12 @@ export class ClienteCadastro implements OnInit {
         this.tituloRetorno = 'Cadastrado';
         this.mensagemRetorno = 'Cliente cadastrado com sucesso!';
         this.limparFormulario();
-        await this.buscarClientes();
       }
 
       this.modalRetorno = true;
     } catch {
       this.tituloRetorno = 'Erro de Sistema';
       this.mensagemRetorno = 'Ocorreu um erro inesperado de conexão.';
-      this.modalRetorno = true;
-    } finally {
-      this.carregando = false;
-    }
-  }
-
-  async buscarClientes() {
-    this.carregando = true;
-
-    try {
-      const { data, error } = await this.supabaseService
-        .getClient()
-        .from('clientes')
-        .select('*')
-        .order('id', { ascending: false });
-      if (error) {
-        this.tituloRetorno = 'Erro';
-        this.mensagemRetorno = 'Erro ao buscar clientes: ' + error.message;
-        this.modalRetorno = true;
-        return;
-      }
-
-      this.listaClientes = data ?? [];
-    } catch {
-      this.tituloRetorno = 'Erro de Sistema';
-      this.mensagemRetorno = 'Ocorreu um erro inesperado ao buscar clientes.';
       this.modalRetorno = true;
     } finally {
       this.carregando = false;
@@ -345,91 +303,12 @@ export class ClienteCadastro implements OnInit {
         this.tituloRetorno = 'Atualizado';
         this.mensagemRetorno = 'Cliente atualizado com sucesso!';
         this.limparFormulario();
-        await this.buscarClientes();
       }
 
       this.modalRetorno = true;
     } catch {
       this.tituloRetorno = 'Erro de Sistema';
       this.mensagemRetorno = 'Ocorreu um erro inesperado ao atualizar.';
-      this.modalRetorno = true;
-    } finally {
-      this.carregando = false;
-    }
-  }
-
-  async confirmarExclusaoCliente(cliente: any) {
-    const possuiOS = await this.clientePossuiOrdemServico(cliente.id);
-
-    if (possuiOS) {
-      this.tituloRetorno = 'Exclusão não permitida';
-      this.mensagemRetorno =
-        `O cliente ${cliente.nome} não pode ser excluído, pois possui Ordem de Serviço vinculada.`;
-      this.modalRetorno = true;
-      return;
-    }
-
-    this.tituloConfirmacao = 'Confirmar Exclusão';
-    this.mensagemConfirmacao =
-      `Deseja realmente excluir o cliente ${cliente.nome}? Esta ação não poderá ser desfeita.`;
-    this.textoBotaoConfirmar = 'Excluir';
-    this.textoBotaoCancelar = 'Cancelar';
-    this.acaoConfirmacao = () => this.excluirCliente(cliente.id);
-
-    this.modalConfirmacao = true;
-  }
-
-  async clientePossuiOrdemServico(clienteId: number): Promise<boolean> {
-    try {
-      const { data, error } = await this.supabaseService
-        .getClient()
-        .from('ordens_servico')
-        .select('id')
-        .eq('cliente_id', clienteId)
-        .limit(1);
-
-      if (error) {
-        throw error;
-      }
-
-      return !!data && data.length > 0;
-    } catch {
-      this.tituloRetorno = 'Erro';
-      this.mensagemRetorno =
-        'Não foi possível validar se o cliente possui Ordem de Serviço vinculada.';
-      this.modalRetorno = true;
-      return true;
-    }
-  }
-
-  async excluirCliente(id: number) {
-    this.modalConfirmacao = false;
-    this.carregando = true;
-
-    try {
-      const { error } = await this.supabaseService
-        .getClient()
-        .from('clientes')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        this.tituloRetorno = 'Falha';
-        this.mensagemRetorno = 'Erro ao excluir cliente: ' + error.message;
-      } else {
-        this.tituloRetorno = 'Excluído';
-        this.mensagemRetorno = 'Cliente excluído com sucesso.';
-        await this.buscarClientes();
-
-        if (this.editandoClienteId === id) {
-          this.limparFormulario();
-        }
-      }
-
-      this.modalRetorno = true;
-    } catch {
-      this.tituloRetorno = 'Erro de Sistema';
-      this.mensagemRetorno = 'Ocorreu um erro inesperado ao excluir.';
       this.modalRetorno = true;
     } finally {
       this.carregando = false;

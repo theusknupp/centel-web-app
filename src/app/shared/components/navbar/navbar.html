@@ -1,12 +1,12 @@
-  <header class="glass-nav">
-    <div class="logo">
-      <span class="logo-highlight">CEN</span>TEL
-    </div>
-    
-    <button class="menu-toggle" (click)="toggleMenu()">
-      <span *ngIf="!menuAberto">☰</span>
-      <span *ngIf="menuAberto">✕</span>
-    </button>
+<header class="glass-nav">
+  <div class="logo">
+    <span class="logo-highlight">CEN</span>TEL
+  </div>
+  
+  <button class="menu-toggle" (click)="toggleMenu()">
+    <span *ngIf="!menuAberto">☰</span>
+    <span *ngIf="menuAberto">✕</span>
+  </button>
 
  <nav [class.aberto]="menuAberto">
     <ul class="nav-links">
@@ -21,13 +21,25 @@
             routerLink="/emissao-os" routerLinkActive="active"
             (click)="fecharMenu()">Emitir Nova OS</a>
           <a routerLink="/lista-os" routerLinkActive="active"
-            *temPermissao="[ Permissoes.ORDEM_SERVICO.CADASTRAR, Permissoes.ORDEM_SERVICO.EDITAR, Permissoes.ORDEM_SERVICO.EXCLUIR ]; modo: 'algum'"
+            *temPermissao="[ Permissoes.ORDEM_SERVICO.VISUALIZAR, Permissoes.ORDEM_SERVICO.CADASTRAR, Permissoes.ORDEM_SERVICO.EDITAR, Permissoes.ORDEM_SERVICO.EXCLUIR ]; modo: 'algum'"
             (click)="fecharMenu()">Listar Ordens</a>
         </div>
       </li>
       
-      <li *temPermissao="[ Permissoes.CLIENTE.VISUALIZAR, Permissoes.CLIENTE.CADASTRAR, Permissoes.CLIENTE.EDITAR, Permissoes.CLIENTE.EXCLUIR ]; modo: 'algum'">
-        <a routerLink="/cadastro" routerLinkActive="active" (click)="fecharMenu()">Clientes</a>
+      <li 
+        *temPermissao="[ Permissoes.CLIENTE.VISUALIZAR, Permissoes.CLIENTE.CADASTRAR, Permissoes.CLIENTE.EDITAR, Permissoes.CLIENTE.EXCLUIR ]; modo: 'algum'"
+        class="dropdown" routerLinkActive="active">
+        <a style="cursor: pointer;">Clientes ▾</a>
+        <div class="dropdown-content">
+          <a 
+            *temPermissao="[ Permissoes.CLIENTE.CADASTRAR, Permissoes.CLIENTE.EDITAR ]; modo: 'algum'"
+            routerLink="/cadastro" routerLinkActive="active" 
+            (click)="fecharMenu()">Cadastrar Cliente</a>
+          <a 
+            *temPermissao="[ Permissoes.CLIENTE.VISUALIZAR, Permissoes.CLIENTE.CADASTRAR, Permissoes.CLIENTE.EDITAR, Permissoes.CLIENTE.EXCLUIR ]; modo: 'algum'"
+            routerLink="/lista-clientes" routerLinkActive="active" 
+            (click)="fecharMenu()">Listar Clientes</a>
+        </div>
       </li>
       
       <li *temPermissao="[ Permissoes.ESTOQUE.VISUALIZAR ]; modo: 'algum'">
@@ -36,6 +48,7 @@
       <li *temPermissao="[ Permissoes.RELATORIO.VISUALIZAR ]; modo: 'algum'">
         <a routerLink="/relatorio" routerLinkActive="active" (click)="fecharMenu()">Relatório</a>
       </li>
+      
     </ul>
   </nav>
   
