@@ -37,7 +37,7 @@
           <div class="input-quarter">
             <label>Técnico Responsável</label>
             <select name="tecnico_id" [(ngModel)]="novaOs.tecnico_id">
-              <option [value]="null">Não definido (Opcional)</option>
+              <option [value]="null">Defina o Técnico</option>
               <option *ngFor="let t of listaTecnicos" [value]="t.id">{{ t.nome }}</option>
             </select>
           </div>

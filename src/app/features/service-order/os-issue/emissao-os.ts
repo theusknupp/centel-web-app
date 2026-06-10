@@ -110,8 +110,8 @@ export class EmissaoOs implements OnInit {
       if (servicoReq.data) this.listaTiposServico = servicoReq.data;
       if (tecnicoReq.data) this.listaTecnicos = tecnicoReq.data;
 
-      this.listaTecnicos.push({ id: 1, nome: 'Técnico 1' }); // Opção "Outro" para técnicos
-      this.listaTecnicos.push({ id: 2, nome: 'Técnico 2' }); // Opção "Outro" para técnicos
+      this.listaTecnicos.push({ id: 1, nome: 'Felipe Luan' }); // Opção "Outro" para técnicos
+      this.listaTecnicos.push({ id: 2, nome: 'José Wellington' }); // Opção "Outro" para técnicos
     } catch (err) {
       this.tituloRetorno = 'Erro!'
       this.mensagemRetorno = 'Erro ao buscar dados do banco' +err;

@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TemPermissaoDirective } from '../permissoes/tem-permissao.directive';
+import { SupabaseService } from '../../../core/services/supabase.service';
 import { Permissoes } from '../../../core/constants/permissions';
 import { PermissaoService } from '../../../core/services/permissao.service';
 
@@ -13,11 +14,16 @@ import { PermissaoService } from '../../../core/services/permissao.service';
   styleUrls: ['./navbar.scss'],
 })
 export class Navbar {
-  constructor(public permissaoService: PermissaoService) {
-    
-  }
+  
+  // 👇 AS INJEÇÕES FORAM ADICIONADAS AQUI 👇
+  constructor(
+    public permissaoService: PermissaoService,
+    private supabaseService: SupabaseService, 
+    private router: Router
+  ) {}
 
   protected readonly Permissoes = Permissoes; // Para usar no *temPermissao do HTML
+  
   // Variável que controla se o menu do celular está aberto (true) ou fechado (false)
   menuAberto: boolean = false;
 
@@ -30,5 +36,14 @@ export class Navbar {
   fecharMenu() {
     this.menuAberto = false;
   }
-  
+
+  async logout() {
+    try {
+      // 👇 Corrigido para minúsculo 👇
+      await this.supabaseService.signOut();
+      this.router.navigate(['/login']); // Redireciona para o login após sair
+    } catch (error) {
+      alert('Não foi possível sair do sistema. Tente novamente.');
+    }
+  }
 }

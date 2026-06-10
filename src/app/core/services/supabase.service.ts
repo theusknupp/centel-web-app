@@ -23,4 +23,13 @@ export class SupabaseService {
   public getClient(): SupabaseClient {
     return this.supabase;
   }
+
+  async signOut() {
+    const { error } = await this.supabase.auth.signOut();
+    if (error) {
+      console.error('Erro ao fazer logout:', error.message);
+      throw error;
+    }
+  }
+
 }
