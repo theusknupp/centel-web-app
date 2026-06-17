@@ -32,4 +32,13 @@ export class SupabaseService {
     }
   }
 
+  public getAdminAuthClient(): SupabaseClient {
+    return createClient(environment.supabaseUrl, environment.supabaseKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false, 
+      }
+    });
+  }
+
 }

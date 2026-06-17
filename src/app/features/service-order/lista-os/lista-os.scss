@@ -42,6 +42,62 @@
   padding: 40px;
 }
 
+/* --- GRID DE FILTROS (NOVO) --- */
+/* --- GRID DE FILTROS (AJUSTADO) --- */
+.filtros-grid {
+  display: grid;
+  grid-template-columns: 120px 1fr 200px; /* Aumentei um pouco o ID para caber o texto */
+  gap: 15px;
+  margin-bottom: 20px;
+  width: 100%;
+
+  input, select {
+    width: 100%;
+    box-sizing: border-box; /* A MÁGICA: Impede que o padding quebre o limite do width */
+    min-width: 0; /* Impede que o campo force o tamanho do grid */
+    padding: 12px 15px;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #fff;
+    outline: none;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+
+    &:focus { 
+      border-color: #20c997; 
+      background: rgba(0, 0, 0, 0.25);
+    }
+    
+    &::placeholder { 
+      color: rgba(255, 255, 255, 0.5); 
+    }
+  }
+
+  select {
+    cursor: pointer;
+    option {
+      background: #1e7d62; 
+      color: #fff;
+    }
+  }
+}
+
+/* Responsividade para o Grid de Filtros */
+@media (max-width: 768px) {
+  .filtros-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Responsividade para o Grid de Filtros */
+@media (max-width: 768px) {
+  .filtros-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* --- TABELA DE ORDEM DE SERVIÇO --- */
 .os-table-section {
   margin-top: 20px; /* Reduzi um pouco a margem já que não há formulário em cima */

@@ -7,11 +7,13 @@ import { ModalConfirmacao } from '../../../shared/components/modal-confirmacao/m
 import { ModalRetorno } from '../../../shared/components/modal-retorno/modal-retorno';
 import { TemPermissaoDirective } from '../../../shared/components/permissoes/tem-permissao.directive';
 import { Permissoes } from '../../../core/constants/permissions';
+import { StatusOS } from '../../../enums/StatusOS-enum';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-lista-os',
   standalone: true,
-  imports: [Navbar, CommonModule, ModalConfirmacao, ModalRetorno, TemPermissaoDirective],
+  imports: [Navbar, CommonModule, ModalConfirmacao, ModalRetorno, TemPermissaoDirective, FormsModule],
   templateUrl: './lista-os.html',
   styleUrl: './lista-os.scss'
 })
@@ -32,6 +34,12 @@ export class ListaOsComponent implements OnInit {
   acaoConfirmacao: () => void = () => {};
   tituloRetorno = '';
   mensagemRetorno = '';
+
+  // --- VARIÁVEIS DE FILTRO ---
+  filtroId: string = '';
+  filtroCliente: string = '';
+  filtroStatus: string = '';
+  opcoesStatusOS = Object.values(StatusOS); // Para popular o <select>
 
   constructor(private supabaseService: SupabaseService, private router: Router) {}
 
@@ -54,6 +62,26 @@ export class ListaOsComponent implements OnInit {
     } finally {
       this.carregando = false;
     }
+  }
+
+  // --- LÓGICA DE FILTRAGEM TRIPLA ---
+  get listaOsFiltrada() {
+    return this.listaOrdensServico.filter(os => {
+      // 1. Filtro de ID
+      const matchId = this.filtroId ? os.id.toString().includes(this.filtroId.trim()) : true;
+      
+      // 2. Filtro de Cliente (Ajuste 'os.clientes.nome' conforme o retorno do seu banco)
+      const nomeCliente = os.clientes?.nome || os.nome_cliente || '';
+      const matchCliente = this.filtroCliente 
+        ? nomeCliente.toLowerCase().includes(this.filtroCliente.toLowerCase().trim()) 
+        : true;
+      
+      // 3. Filtro de Status
+      const matchStatus = this.filtroStatus ? os.status_servico === this.filtroStatus : true;
+
+      // Só exibe a OS se ela passar nos três testes ao mesmo tempo
+      return matchId && matchCliente && matchStatus;
+    });
   }
 
   async buscarOrdensServico() {

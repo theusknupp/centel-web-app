@@ -5,10 +5,12 @@
 :host {
   /* Define a família da fonte para todos os elementos filhos */
   font-family: 'Inter', sans-serif;
-  /* Garante que o componente se comporte como um bloco que ocupa espaço na tela */
-  display: block;
-  /* Garante que ocupe no mínimo 100% da altura da janela do navegador */
+  
+  /* CORREÇÃO AQUI: Mudamos para flex para ele abraçar a Navbar e o Conteúdo juntos */
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  
   /* Resgata os tons de verde da identidade da Centel usados na tela de login */
   background: linear-gradient(135deg, #0b3d2e 0%, #1e7d62 100%);
   /* Define a cor padrão do texto como branco para dar contraste com o fundo escuro */
@@ -19,18 +21,22 @@
 .dashboard-layout {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  
+  /* CORREÇÃO AQUI: Trocamos o min-height: 100vh por flex: 1. 
+     Isso faz ele preencher exatamente o espaço que sobra debaixo da Navbar, sem estourar a tela. */
+  flex: 1; 
 }
 
 /* --- ESTILOS DO CONTEÚDO CENTRAL --- */
 .main-content {
   /* O flex: 1 faz o centro empurrar tudo e ocupar todo o espaço restante da tela */
   flex: 1;
-  padding: 40px;
-  /* Centraliza o painel de boas-vindas na tela inteira */
+  padding: 40px 20px;
+  /* Organiza os elementos em coluna (Painel em cima, Métricas embaixo) */
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* CORREÇÃO: Ajustado para 'center' para garantir que o conjunto inteiro fique no centro vertical da tela */
   justify-content: center;
 }
 
@@ -92,5 +98,69 @@
     line-height: 1.6;
     margin: 0;
     font-weight: 300;
+  }
+}
+
+/* Mensagem de carregamento das métricas */
+.loading-msg {
+  color: #20c997;
+  font-size: 1.1rem;
+  margin-top: 30px;
+  font-weight: 500;
+}
+
+/* --- GRID DE INDICADORES METRICAS (LIMPO E MINIMALISTA) --- */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 700px; /* Alinhado milimetricamente com a largura do seu painel de vidro */
+  width: 100%;
+  margin-top: 25px; /* Espaçamento controlado entre o painel e os indicadores */
+}
+
+.metric-card {
+  /* Mantém a identidade visual Glassmorphism discreta do projeto */
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  .card-info {
+    h3 {
+      margin: 0;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .numero {
+      display: block;
+      font-size: 2.6rem; /* Foco total e limpo no indicador numérico */
+      font-weight: 700;
+      color: #20c997; /* Verde oficial da Centel */
+      margin-top: 8px;
+      line-height: 1;
+    }
+  }
+}
+
+/* Responsividade: Transforma os indicadores em lista no celular */
+@media (max-width: 600px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
   }
 }

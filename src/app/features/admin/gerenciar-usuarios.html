@@ -1,0 +1,70 @@
+<app-navbar></app-navbar>
+
+<main class="container-cadastro">
+  <section class="glass-card-grande">
+    
+    <header style="margin-bottom: 30px;">
+      <h1>Gestão de Acessos</h1>
+      <p>Cadastre novos membros da equipe e defina seus níveis de permissão no sistema.</p>
+    </header>
+
+    <div *ngIf="mensagemErro" class="alerta erro">{{ mensagemErro }}</div>
+    <div *ngIf="mensagemSucesso" class="alerta sucesso">{{ mensagemSucesso }}</div>
+
+    <div class="formulario-admin">
+      <h2>Novo Usuário</h2>
+      
+      <div class="filtros-grid">
+        <input 
+          type="email" 
+          placeholder="E-mail de acesso" 
+          [(ngModel)]="novoEmail" 
+          [ngModelOptions]="{ standalone: true }"
+          [disabled]="carregando">
+        
+        <input 
+          type="password" 
+          placeholder="Senha provisória" 
+          [(ngModel)]="novaSenha" 
+          [ngModelOptions]="{ standalone: true }"
+          [disabled]="carregando">
+        
+        <select [(ngModel)]="perfilSelecionado" [ngModelOptions]="{ standalone: true }" [disabled]="carregando">
+          <option value="" disabled selected>Selecione um Perfil...</option>
+          <option *ngFor="let perfil of listaPerfis" [value]="perfil.id">
+            {{ perfil.nome }}
+          </option>
+        </select>
+
+        <button 
+          class="btn-salvar" 
+          (click)="cadastrarUsuario()" 
+          [disabled]="carregando">
+          {{ carregando ? 'Salvando...' : 'Cadastrar' }}
+        </button>
+      </div>
+    </div>
+
+    <section class="os-table-section" style="margin-top: 40px;">
+      <h2>Usuários Cadastrados</h2>
+      <table class="os-table">
+        <thead>
+          <tr>
+            <th>E-mail</th>
+            <th>Perfil de Acesso</th>
+            <th>Data de Criação</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="4" style="text-align: center; padding: 20px; color: rgba(255,255,255,0.6);">
+              A lista de usuários aparecerá aqui após a configuração da View no banco.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </section>
+</main>

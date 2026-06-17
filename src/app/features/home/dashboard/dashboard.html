@@ -1,21 +1,44 @@
-<div class="dashboard-layout">
-  
-  <app-navbar></app-navbar>
+<app-navbar></app-navbar>
 
+<div class="dashboard-layout">
   <main class="main-content">
     
-    <section class="welcome-card glass-panel">
+    <section class="glass-panel">
       <div class="welcome-text">
-        <h1>Olá, bem-vindo de volta!</h1>
-        
-        <p class="date-text">{{ dataAtual }}</p>
-        
+        <h1>Painel de Controle</h1>
+        <p class="date-text">Hoje é {{ dataAtual }}</p>
         <div class="divider"></div>
-        
         <p class="motivational-text">
-          Transformando desafios técnicos em soluções práticas e rápidas, todos os dias.
+          Bem-vindo ao Centel Web.<br> Transformando desafios técnicos em soluções práticas e rápidas, todos os dias.
         </p>
       </div>
+    </section>
+
+    <div *ngIf="carregando" class="loading-msg">Atualizando indicadores gerenciais...</div>
+
+    <section class="cards-grid" *ngIf="!carregando">
+      
+      <div class="metric-card">
+        <div class="card-info">
+          <h3>OS Cadastradas (Mês)</h3>
+          <span class="numero">{{ osCadastradasMes }}</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="card-info">
+          <h3>OS em Andamento</h3>
+          <span class="numero">{{ osEmAndamento }}</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="card-info">
+          <h3>OS Concluídas (Mês)</h3>
+          <span class="numero">{{ osConcluidasMes }}</span>
+        </div>
+      </div>
+
     </section>
 
   </main>

@@ -15,33 +15,44 @@ import { PermissaoService } from '../../../core/services/permissao.service';
 })
 export class Navbar {
   
-  // 👇 AS INJEÇÕES FORAM ADICIONADAS AQUI 👇
   constructor(
     public permissaoService: PermissaoService,
     private supabaseService: SupabaseService, 
     private router: Router
   ) {}
 
-  protected readonly Permissoes = Permissoes; // Para usar no *temPermissao do HTML
+  protected readonly Permissoes = Permissoes; 
   
-  // Variável que controla se o menu do celular está aberto (true) ou fechado (false)
+  // Controles de estado dos menus
   menuAberto: boolean = false;
+  menuAdminAberto: boolean = false;
 
-  // Função disparada ao clicar no botão hambúrguer (Inverte o valor atual)
   toggleMenu() {
     this.menuAberto = !this.menuAberto;
   }
 
-  // Função disparada ao clicar em qualquer link (Força o fechamento do menu)
   fecharMenu() {
+    this.menuAberto = false;
+  }
+
+  // --- Lógica do Menu do Administrador ---
+  toggleAdminMenu() {
+    this.menuAdminAberto = !this.menuAdminAberto;
+  }
+
+  fecharAdminMenu() {
+    this.menuAdminAberto = false;
+  }
+
+  fecharMenusCompletos() {
+    this.menuAdminAberto = false;
     this.menuAberto = false;
   }
 
   async logout() {
     try {
-      // 👇 Corrigido para minúsculo 👇
       await this.supabaseService.signOut();
-      this.router.navigate(['/login']); // Redireciona para o login após sair
+      this.router.navigate(['/login']); 
     } catch (error) {
       alert('Não foi possível sair do sistema. Tente novamente.');
     }

@@ -10,6 +10,17 @@
 
     <div *ngIf="carregando" class="loading-msg">Carregando ordens de serviço...</div>
 
+    <div class="filtros-grid">
+      <input type="text" placeholder="Nº da OS" [(ngModel)]="filtroId" [ngModelOptions]="{ standalone: true }">
+      
+      <input type="text" placeholder="Nome do Cliente" [(ngModel)]="filtroCliente" [ngModelOptions]="{ standalone: true }">
+      
+      <select [(ngModel)]="filtroStatus" [ngModelOptions]="{ standalone: true }">
+        <option value="">Todos os Status</option>
+        <option *ngFor="let status of opcoesStatusOS" [value]="status">{{ status }}</option>
+      </select>
+    </div>
+
     <section *ngIf="!carregando" class="os-table-section">
       <table class="os-table">
         <thead>
@@ -23,11 +34,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngIf="listaOrdensServico.length === 0">
+          <tr *ngIf="listaOsFiltrada.length === 0">
             <td colspan="6" style="text-align: center; padding: 20px;">Nenhuma Ordem de Serviço encontrada.</td>
           </tr>
           
-          <tr *ngFor="let os of listaOrdensServico">
+          <tr *ngFor="let os of listaOsFiltrada">
             <td>{{ os.id }}</td>
             <td>{{ os.cliente_nome }}</td>
             <td>{{ os.equipamento }}</td>

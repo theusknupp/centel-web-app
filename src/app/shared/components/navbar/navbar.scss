@@ -129,14 +129,6 @@
   100% { opacity: 1; transform: translateY(0); }
 }
 
-.user-profile .avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #20c997, #128c7e);
-  cursor: pointer;
-}
-
 /* Oculta botão no Desktop */
 .menu-toggle {
   display: none;
@@ -146,6 +138,80 @@
   font-size: 1.8rem;
   cursor: pointer;
   transition: transform 0.2s;
+}
+
+/* =========================================
+   ÁREA DO PERFIL E DROPDOWN DO ADMIN
+   ========================================= */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #20c997, #128c7e);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  /* NOVO: Estilo para o menu que abre ao clicar na foto */
+  .admin-dropdown {
+    position: absolute;
+    top: 120%; /* Fica um pouco abaixo do avatar */
+    right: 0; 
+    
+    background: rgba(11, 61, 46, 0.95); 
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    box-shadow: 0px 8px 24px 0px rgba(0,0,0,0.5);
+    
+    min-width: 200px; 
+    z-index: 9999;
+    animation: menuFadeIn 0.2s ease forwards;
+    
+    a {
+      color: rgba(255, 255, 255, 0.8);
+      padding: 16px 20px; 
+      font-size: 0.95rem;
+      width: 100%;
+      display: block;
+      box-sizing: border-box; 
+      text-decoration: none;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(32, 201, 151, 0.15); 
+        color: #20c997; 
+      }
+    }
+  }
+
+  .btn-logout {
+    background: rgba(255, 255, 255, 0.1);
+    color: #20c997;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #c92a2a;
+      color: #fff;
+      box-shadow: 0 0 10px rgba(201, 42, 42, 0.4);
+      border-color: #c92a2a;
+    }
+  }
 }
 
 /* =========================================
@@ -256,28 +322,4 @@
 @keyframes menuDeslizar {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-
-  .btn-logout {
-    background: rgba(255, 255, 255, 0.1);
-    color: #20c997;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &:hover {
-      background: #c92a2a;
-      color: #fff;
-      box-shadow: 0 0 10px rgba(201, 42, 42, 0.4);
-    }
-  }
 }

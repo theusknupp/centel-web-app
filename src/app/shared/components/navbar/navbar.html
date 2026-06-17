@@ -1,5 +1,5 @@
 <header class="glass-nav">
-  <div class="logo">
+  <div class="logo" routerLink="/dashboard" style="cursor: pointer;" title="Ir para o Início">
     <span class="logo-highlight">CEN</span>TEL
   </div>
   
@@ -56,6 +56,18 @@
       <button class="btn-logout" (click)="logout()" title="Sair do Sistema">
       Sair
      </button>
-    <div class="avatar"></div>
+
+     <div style="position: relative;">
+       <div class="avatar" (click)="toggleAdminMenu()" title="Configurações e Perfil"></div>
+
+       <ng-container *ngIf="menuAdminAberto">
+         <div class="admin-dropdown" *temPermissao="[Permissoes.RELATORIO.VISUALIZAR]">
+           <a routerLink="/admin/usuarios" (click)="fecharMenusCompletos()">
+             Gestão de Usuários
+           </a>
+         </div>
+       </ng-container>
+     </div>
+
   </div>
 </header>

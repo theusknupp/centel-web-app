@@ -12,6 +12,7 @@ import { Permissoes } from './core/constants/permissions';
 import { ReportsComponent } from './features/reports/reports';
 import { ListaClientes } from './features/clientes/lista-clientes/lista-clientes';
 import { authGuard } from './core/guards/auth-guard';
+import { GerenciarUsuariosComponent } from './features/admin/gerenciar-usuarios';
 
 
 export const routes: Routes = [
@@ -91,5 +92,6 @@ export const routes: Routes = [
         ],
         'alguma'
       ),] },
-
+      { path: 'admin/usuarios', component: GerenciarUsuariosComponent, canActivate: [authGuard
+      ] }
 ];
